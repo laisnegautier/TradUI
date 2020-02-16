@@ -6,7 +6,7 @@ import {
   TextInput,
   ActivityIndicator
 } from "react-native";
-import { getTextToSpeech, testVisualRecognition } from "./textToSpeech";
+import { testVisualRecognition, testTextToSpeech } from "./textToSpeech";
 
 export default class TextToSpeechScreen extends Component {
   constructor(props) {
@@ -18,7 +18,7 @@ export default class TextToSpeechScreen extends Component {
     this.setState({ textInput: text, isLoading: true });
 
     //getTextToSpeech(text)
-    testVisualRecognition(text)
+    testTextToSpeech(text)
       .then(audioReceived =>
         this.setState({ audioFile: audioReceived, isLoading: false })
       )
