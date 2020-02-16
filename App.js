@@ -1,6 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, Text, View, Button, TextInput, Picker } from "react-native";
-import Constants from 'expo-constants';
+import { StyleSheet, Text, View, Button, TextInput, Picker, Flatlist } from "react-native";
 import * as Speech from 'expo-speech';
 
 // import TextToSpeechV1 from 'ibm-watson/text-to-speech/v1';
@@ -122,6 +121,8 @@ class Translator extends Component {
       <Button title="Traduire" onPress={this._traduire} />
       <Text>{this.state.traduction}</Text>
       <Button title="Ecouter traduction" onPress={this.ecouterTraduction} />
+
+      <Flatlist></Flatlist>
     </View>;
   }
 }
