@@ -1,8 +1,6 @@
 import React, { Component } from "react";
-import LearnTranslateScreen from "./components/LearnTranslateScreen";
+import Routing from "./Routing/Routing";
 
 export default function App() {
-  return (
-    <LearnTranslateScreen />
-  );
+  return <Routing />;
 }

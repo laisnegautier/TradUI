@@ -1,6 +1,16 @@
 import React, { Component } from "react";
-import { StyleSheet, Text, View, TextInput, Button, Picker } from "react-native";
-import { getDetectionLangue, getTraduction } from "./../helpers/langageTranslatorApi";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  Button,
+  Picker
+} from "react-native";
+import {
+  getDetectionLangue,
+  getTraduction
+} from "./../helpers/langageTranslatorApi";
 import * as Speech from "expo-speech";
 
 export default class LearnTranslateScreen extends Component {
@@ -8,7 +18,7 @@ export default class LearnTranslateScreen extends Component {
     super(props);
     this.state = {
       texte: "",
-      langageDetecte: "attendre",
+      langageDetecte: "...",
       langageDeTraduction: "en",
       traduction: "...",
       isLoading: true
@@ -26,19 +36,17 @@ export default class LearnTranslateScreen extends Component {
     });
   };
 
-  detecterLangue = (texte) => {
-    getDetectionLangue(texte)
-      .then(response => {
-        this.setState({ langageDetecte: response });
-      });;
-  }
+  detecterLangue = texte => {
+    getDetectionLangue(texte).then(response => {
+      this.setState({ langageDetecte: response });
+    });
+  };
 
   traduire = (texte, langageDetecte, langageDeTraduction) => {
-    getTraduction(texte, langageDetecte, langageDeTraduction)
-      .then(response => {
-        this.setState({ traduction: response });
-      });;
-  }
+    getTraduction(texte, langageDetecte, langageDeTraduction).then(response => {
+      this.setState({ traduction: response });
+    });
+  };
 
   //Action une fois que l'objet est construit
   componentDidMount = () => {
@@ -81,7 +89,14 @@ export default class LearnTranslateScreen extends Component {
           onPress={this.ecouterTexteInitial}
         />
 
-        <Button title="Traduire" onPress={this.traduire(this.state.texte, this.state.langageDetecte, this.state.langageDeTraduction)} />
+        <Button
+          title="Traduire"
+          onPress={this.traduire(
+            this.state.texte,
+            this.state.langageDetecte,
+            this.state.langageDeTraduction
+          )}
+        />
         <Text>{this.state.traduction}</Text>
         <Button title="Ecouter traduction" onPress={this.ecouterTraduction} />
       </View>
