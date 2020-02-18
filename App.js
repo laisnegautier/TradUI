@@ -160,26 +160,16 @@ class Translator extends Component {
         <Button title="Traduire" onPress={this._traduire} />
         <Text>{this.state.traduction}</Text>
         <Button title="Ecouter traduction" onPress={this.ecouterTraduction} />
-
-        <Flatlist></Flatlist>
       </View>
     );
   }
 }
 
 export default function App() {
-  //console.log(Promise.resolve(_access_tokenIAM));
-
   return (
     <View>
-      <Text>test</Text>
-      {/* <Jeton /> */}
-
       <Translator />
     </View>
-    // <View style={styles.container}>
-    //   <TextToSpeechScreen />
-    // </View>
   );
 }
 
