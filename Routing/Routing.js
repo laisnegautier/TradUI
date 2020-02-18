@@ -1,20 +1,20 @@
 import React, { Component } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import LearnTranslateScreen from "./components/LearnTranslateScreen";
-import LearnWordcontextScreen from "./components/LearnWordcontextScreen";
-import PlayFindLanguageScreen from "./components/PlayFindLanguageScreen";
+import LearnTranslateScreen from "./../components/LearnTranslateScreen";
+import LearnWordcontextScreen from "./../components/LearnWordcontextScreen";
+import PlayFindlanguageScreen from "./../components/PlayFindlanguageScreen";
 import { createAppContainer } from "react-navigation";
 import { createStackNavigator } from "react-navigation-stack";
 import { createBottomTabNavigator } from "react-navigation-tabs";
 
 const defaultNavigationOptions = {
   headerStyle: {
-    backgroundColor: "#a700a7"
+    backgroundColor: "#fafafa"
   },
-  headerTintColor: "#fff",
+  headerTintColor: "#000",
   headerTitleStyle: {
-    fontWeight: "bold"
+    fontWeight: "light"
   }
 };
 
@@ -29,6 +29,8 @@ const getTabBarIcon = (navigation, focused, tintColor) => {
   return <Ionicons name={iconName} size={25} color={tintColor} />;
 };
 
+
+// NOS STACKS
 const LearnStack = createStackNavigator(
   {
     LearnTranslate: LearnTranslateScreen,
@@ -41,13 +43,15 @@ const LearnStack = createStackNavigator(
 
 const PlayStack = createStackNavigator(
   {
-    PlayFindLanguage: PlayFindLanguageScreen
+    PlayFindlanguage: PlayFindlanguageScreen
   },
   {
     defaultNavigationOptions: defaultNavigationOptions
   }
 );
 
+
+// LES ONGLETS DU BAS
 const TabNavigator = createBottomTabNavigator(
   {
     Learn: LearnStack,
