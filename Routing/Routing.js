@@ -9,6 +9,7 @@ import { createStackNavigator } from "react-navigation-stack";
 import { createBottomTabNavigator } from "react-navigation-tabs";
 
 const defaultNavigationOptions = {
+  title: 'HeaderTitle',
   headerStyle: {
     backgroundColor: "#fafafa"
   },
@@ -56,8 +57,8 @@ const PlayStack = createStackNavigator(
 // LES ONGLETS DU BAS
 const TabNavigator = createBottomTabNavigator(
   {
-    Learn: LearnStack,
-    Play: PlayStack
+    Apprendre: LearnStack,
+    Jouer: PlayStack
   },
   {
     defaultNavigationOptions: ({ navigation }) => ({

@@ -15,6 +15,8 @@ import {
 import * as Speech from "expo-speech";
 
 export default class LearnTranslateScreen extends Component {
+  static navigationOptions = { title: "Traduction" };
+
   constructor(props) {
     super(props);
     this.state = {
