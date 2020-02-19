@@ -14,7 +14,7 @@ const defaultNavigationOptions = {
   },
   headerTintColor: "#000",
   headerTitleStyle: {
-    fontWeight: "light"
+    fontWeight: "bold"
   }
 };
 
@@ -22,9 +22,9 @@ const getTabBarIcon = (navigation, focused, tintColor) => {
   const { routeName } = navigation.state;
   let iconName;
   if (routeName === "Learn") {
-    iconName = `ios-wine`;
+    iconName = `ios-git-compare`;
   } else if (routeName === "Play") {
-    iconName = `ios-menu`;
+    iconName = `ios-football`;
   }
   return <Ionicons name={iconName} size={25} color={tintColor} />;
 };
