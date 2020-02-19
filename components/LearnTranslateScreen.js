@@ -21,16 +21,17 @@ export default class LearnTranslateScreen extends Component {
     super(props);
     this.state = {
       texte: "",
-      langageDetecte: "",
+      langagesDetectes: [],
       langageDeTraduction: "en",
       traduction: "...",
-      isLoading: true
+      isLoading: true,
+      currentLabel: "Choisissez votre langue"
     };
   }
 
   //METHODES DE NOTRE CLASSE
   ecouterTexteInitial = () => {
-    Speech.speak(this.state.texte, { language: this.state.langageDetecte });
+    Speech.speak(this.state.texte, { language: this.state.langagesDetectes });
   };
 
   ecouterTraduction = () => {
@@ -43,19 +44,20 @@ export default class LearnTranslateScreen extends Component {
     if (texte != "") {
       getDetectionLangue(texte)
         .then(jsonResponse => {
-          this.setState({ langageDetecte: jsonResponse.languages[0].language });
+          jsonResponse.languages;
+          this.setState({ langagesDetectes: jsonResponse.languages });
+          console.log(jsonResponse.languages);
         })
         .catch(error => {
           alert(error.message);
         });
-    }
-    else {
+    } else {
       alert("Veuillez entrer du texte.");
     }
   };
 
-  traduire = (texte, langageDetecte, langageDeTraduction) => {
-    getTraduction(texte, langageDetecte, langageDeTraduction)
+  traduire = (texte, langagesDetectes, langageDeTraduction) => {
+    getTraduction(texte, langagesDetectes, langageDeTraduction)
       .then(responseJson => {
         this.setState({ traduction: responseJson.translations[0].translation });
       })
@@ -63,6 +65,17 @@ export default class LearnTranslateScreen extends Component {
         alert(error.message);
       });
   };
+
+  pickerChange(index) {
+    this.state.langagesDetectes.map((v, i) => {
+      if (index === i) {
+        this.setState({
+          currentLabel: this.state.langagesDetectes[index].language,
+          langagesDetectes: this.state.langagesDetectes[index].language
+        });
+      }
+    });
+  }
 
   //Action une fois que l'objet est construit
   componentDidMount = () => {
@@ -73,7 +86,6 @@ export default class LearnTranslateScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
-
         <View style={styles.inputContainer}>
           <TouchableOpacity onPress={() => this.ecouterTexteInitial()}>
             <View style={styles.ioniconsMegaphone1}>
@@ -89,28 +101,59 @@ export default class LearnTranslateScreen extends Component {
           />
         </View>
 
-        <View style={{ flexDirection: "row", width: "90%", marginBottom: 20, justifyContent: "space-between", alignItems: "center" }}>
+        <View
+          style={{
+            flexDirection: "row",
+            width: "90%",
+            marginBottom: 20,
+            justifyContent: "space-between",
+            alignItems: "center"
+          }}
+        >
           <Text style={{ fontSize: 15 }}>Langue détectée : </Text>
 
-          <View style={{ borderWidth: 1, backgroundColor: "#fff", borderColor: "#fff", borderRadius: 5, elevation: 4 }}>
+          <View
+            style={{
+              borderWidth: 1,
+              backgroundColor: "#fff",
+              borderColor: "#fff",
+              borderRadius: 5,
+              elevation: 4
+            }}
+          >
             <Picker
-              selectedValue={this.state.langageDetecte}
+              selectedValue={this.state.langagesDetectes[0]}
               style={{ width: 170 }}
               onValueChange={(itemValue, itemIndex) =>
-                this.setState({ langageDetecte: itemValue })
+                this.pickerChange(itemIndex)
               }
             >
-              <Picker.Item label="Français" value="fr" />
-              <Picker.Item label="Anglais (UK)" value="en" />
-              <Picker.Item label="Espagnol" value="sp" />
+              {this.state.langagesDetectes.map(v => {
+                return <Picker.Item label={v.language} value={v.language} />;
+              })}
             </Picker>
           </View>
         </View>
 
-        <View style={{ flexDirection: "row", width: "90%", justifyContent: "space-between", alignItems: "center" }}>
+        <View
+          style={{
+            flexDirection: "row",
+            width: "90%",
+            justifyContent: "space-between",
+            alignItems: "center"
+          }}
+        >
           <Text style={{ fontSize: 15 }}>Traduire en : </Text>
 
-          <View style={{ borderWidth: 1, backgroundColor: "#fff", borderColor: "#fff", borderRadius: 5, elevation: 4 }}>
+          <View
+            style={{
+              borderWidth: 1,
+              backgroundColor: "#fff",
+              borderColor: "#fff",
+              borderRadius: 5,
+              elevation: 4
+            }}
+          >
             <Picker
               selectedValue={this.state.langageDeTraduction}
               style={{ width: 170 }}
@@ -118,11 +161,10 @@ export default class LearnTranslateScreen extends Component {
                 this.setState({ langageDeTraduction: itemValue });
                 this.traduire(
                   this.state.texte,
-                  this.state.langageDetecte,
+                  this.state.langagesDetectes,
                   this.state.langageDeTraduction
                 );
-              }
-              }
+              }}
             >
               <Picker.Item label="Français" value="fr" />
               <Picker.Item label="Anglais (UK)" value="en" />
@@ -138,15 +180,16 @@ export default class LearnTranslateScreen extends Component {
             </View>
           </TouchableOpacity>
 
-          <Text style={styles.textToTranslateInput}>{this.state.traduction}</Text>
+          <Text style={styles.textToTranslateInput}>
+            {this.state.traduction}
+          </Text>
         </View>
-
 
         <TouchableOpacity
           onPress={() =>
             this.traduire(
               this.state.texte,
-              this.state.langageDetecte,
+              this.state.langagesDetectes,
               this.state.langageDeTraduction
             )
           }
