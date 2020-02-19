@@ -29,12 +29,15 @@ const getTabBarIcon = (navigation, focused, tintColor) => {
   return <Ionicons name={iconName} size={25} color={tintColor} />;
 };
 
-
 // NOS STACKS
 const LearnStack = createStackNavigator(
   {
-    LearnTranslate: LearnTranslateScreen,
-    LearnWordContext: LearnWordcontextScreen
+    LearnTranslate: {
+      screen: LearnTranslateScreen
+    },
+    LearnWordContext: {
+      screen: LearnWordcontextScreen
+    }
   },
   {
     defaultNavigationOptions: defaultNavigationOptions
@@ -49,7 +52,6 @@ const PlayStack = createStackNavigator(
     defaultNavigationOptions: defaultNavigationOptions
   }
 );
-
 
 // LES ONGLETS DU BAS
 const TabNavigator = createBottomTabNavigator(

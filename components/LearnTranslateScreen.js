@@ -37,15 +37,19 @@ export default class LearnTranslateScreen extends Component {
   };
 
   detecterLangue = texte => {
-    getDetectionLangue(texte).then(response => {
-      this.setState({ langageDetecte: response });
-    });
+    getDetectionLangue(texte)
+      .then(jsonResponse => jsonResponse.languages[0].language)
+      .then(response => {
+        this.setState({ langageDetecte: response });
+      });
   };
 
   traduire = (texte, langageDetecte, langageDeTraduction) => {
-    getTraduction(texte, langageDetecte, langageDeTraduction).then(response => {
-      this.setState({ traduction: response });
-    });
+    getTraduction(texte, langageDetecte, langageDeTraduction)
+      .then(responseJson => responseJson.translations[0].translation)
+      .then(response => {
+        this.setState({ traduction: response });
+      });
   };
 
   //Action une fois que l'objet est construit
