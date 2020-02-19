@@ -22,9 +22,9 @@ const defaultNavigationOptions = {
 const getTabBarIcon = (navigation, focused, tintColor) => {
   const { routeName } = navigation.state;
   let iconName;
-  if (routeName === "Learn") {
+  if (routeName === "Apprendre") {
     iconName = `ios-git-compare`;
-  } else if (routeName === "Play") {
+  } else if (routeName === "Jouer") {
     iconName = `ios-football`;
   }
   return <Ionicons name={iconName} size={25} color={tintColor} />;
