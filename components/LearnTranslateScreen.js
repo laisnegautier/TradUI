@@ -174,6 +174,7 @@ const styles = StyleSheet.create({
   },
 
   translateButton: {
-    borderColor: "orange"
+    borderColor: "orange",
+    borderWidth: 1
   }
 });
