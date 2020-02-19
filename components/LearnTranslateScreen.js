@@ -39,17 +39,21 @@ export default class LearnTranslateScreen extends Component {
 
   detecterLangue = texte => {
     getDetectionLangue(texte)
-      .then(jsonResponse => jsonResponse.languages[0].language)
-      .then(response => {
-        this.setState({ langageDetecte: response });
+      .then(jsonResponse => {
+        this.setState({ langageDetecte: jsonResponse.languages[0].language });
+      })
+      .catch(error => {
+        alert(error.message);
       });
   };
 
   traduire = (texte, langageDetecte, langageDeTraduction) => {
     getTraduction(texte, langageDetecte, langageDeTraduction)
-      .then(responseJson => responseJson.translations[0].translation)
-      .then(response => {
-        this.setState({ traduction: response });
+      .then(responseJson => {
+        this.setState({ traduction: responseJson.translations[0].translation });
+      })
+      .catch(error => {
+        alert(error.message);
       });
   };
 
@@ -106,7 +110,7 @@ export default class LearnTranslateScreen extends Component {
         </Picker>
 
         <TouchableOpacity
-          onPress={this.ecouterTexteInitial}
+          onPress={() => this.ecouterTexteInitial}
           style={styles.listeningButton}
         >
           <Ionicons name="ios-megaphone" size={25}></Ionicons>
@@ -114,18 +118,20 @@ export default class LearnTranslateScreen extends Component {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={this.traduire(
-            this.state.texte,
-            this.state.langageDetecte,
-            this.state.langageDeTraduction
-          )}
+          onPress={() =>
+            this.traduire(
+              this.state.texte,
+              this.state.langageDetecte,
+              this.state.langageDeTraduction
+            )
+          }
           style={styles.translateButton}
         >
           <Text>Traduire</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={this.ecouterTexteInitial}
+          onPress={() => this.ecouterTexteInitial}
           style={styles.listeningButton}
         >
           <Ionicons name="ios-megaphone" size={25}></Ionicons>
