@@ -4,8 +4,8 @@ import {
   Text,
   View,
   TextInput,
-  Button,
-  Picker
+  Picker,
+  TouchableOpacity
 } from "react-native";
 import {
   getDetectionLangue,
@@ -71,7 +71,6 @@ export default class LearnTranslateScreen extends Component {
           onSubmitEditing={e => this.detecterLangue(this.state.texte)}
         />
         <Text>Identification de la langue : {this.state.langageDetecte}</Text>
-
         <Picker
           selectedValue={this.state.langageDeTraduction}
           style={{ height: 50, width: 200 }}
@@ -83,22 +82,24 @@ export default class LearnTranslateScreen extends Component {
           <Picker.Item label="Anglais (UK)" value="en" />
           <Picker.Item label="Espagnol" value="sp" />
         </Picker>
+        <TouchableOpacity onPress={this.ecouterTexteInitial}>
+          <Text>Ecouter texte initial</Text>
+        </TouchableOpacity>
 
-        <Button
-          title="Ecouter Texte Initial"
-          onPress={this.ecouterTexteInitial}
-        />
-
-        <Button
-          title="Traduire"
+        <TouchableOpacity
           onPress={this.traduire(
             this.state.texte,
             this.state.langageDetecte,
             this.state.langageDeTraduction
           )}
-        />
+        >
+          <Text>Traduire</Text>
+        </TouchableOpacity>
+
         <Text>{this.state.traduction}</Text>
-        <Button title="Ecouter traduction" onPress={this.ecouterTraduction} />
+        <TouchableOpacity onPress={this.ecouterTraduction}>
+          <Text>Ecouter traduction</Text>
+        </TouchableOpacity>
       </View>
     );
   }
