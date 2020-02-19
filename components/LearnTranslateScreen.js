@@ -39,17 +39,19 @@ export default class LearnTranslateScreen extends Component {
 
   detecterLangue = texte => {
     getDetectionLangue(texte)
-      .then(jsonResponse => jsonResponse.languages[0].language)
-      .then(response => {
-        this.setState({ langageDetecte: response });
+      .then(jsonResponse => {
+        this.setState({ langageDetecte: jsonResponse.languages[0].language });
+      }).catch((error) => {
+        alert(error.message);
       });
   };
 
   traduire = (texte, langageDetecte, langageDeTraduction) => {
     getTraduction(texte, langageDetecte, langageDeTraduction)
-      .then(responseJson => responseJson.translations[0].translation)
-      .then(response => {
-        this.setState({ traduction: response });
+      .then(responseJson => {
+        this.setState({ traduction: responseJson.translations[0].translation });
+      }).catch((error) => {
+        alert(error.message);
       });
   };
 
@@ -90,12 +92,12 @@ export default class LearnTranslateScreen extends Component {
           <Picker.Item label="Espagnol" value="sp" />
         </Picker>
 
-        <TouchableOpacity onPress={this.ecouterTexteInitial}>
+        <TouchableOpacity onPress={() => this.ecouterTexteInitial}>
           <Text>Ecouter texte initial</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={this.traduire(
+          onPress={() => this.traduire(
             this.state.texte,
             this.state.langageDetecte,
             this.state.langageDeTraduction
@@ -105,7 +107,7 @@ export default class LearnTranslateScreen extends Component {
         </TouchableOpacity>
 
         <Text>{this.state.traduction}</Text>
-        <TouchableOpacity onPress={this.ecouterTraduction}>
+        <TouchableOpacity onPress={() => this.ecouterTraduction}>
           <Text>Ecouter traduction</Text>
         </TouchableOpacity>
       </View>
