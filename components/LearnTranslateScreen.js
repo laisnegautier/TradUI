@@ -43,7 +43,8 @@ export default class LearnTranslateScreen extends Component {
     getDetectionLangue(texte)
       .then(jsonResponse => {
         this.setState({ langageDetecte: jsonResponse.languages[0].language });
-      }).catch((error) => {
+      })
+      .catch(error => {
         alert(error.message);
       });
   };
@@ -52,7 +53,8 @@ export default class LearnTranslateScreen extends Component {
     getTraduction(texte, langageDetecte, langageDeTraduction)
       .then(responseJson => {
         this.setState({ traduction: responseJson.translations[0].translation });
-      }).catch((error) => {
+      })
+      .catch(error => {
         alert(error.message);
       });
   };
@@ -66,7 +68,6 @@ export default class LearnTranslateScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
-
         <View style={styles.inputContainer}>
           <View style={styles.ioniconsSearch}>
             <Ionicons name="ios-search" size={25}></Ionicons>
@@ -80,7 +81,23 @@ export default class LearnTranslateScreen extends Component {
           />
         </View>
 
-        <Text>Identification de la langue : {this.state.langageDetecte}</Text>
+        <View style={{ flexDirection: "row" }}>
+          <Text>Identification de la langue : {this.state.langageDetecte}</Text>
+
+          <Picker
+            selectedValue={this.state.langageDetecte}
+            style={{ height: 50, width: 200 }}
+            onValueChange={(itemValue, itemIndex) =>
+              this.setState({ langageDeTraduction: itemValue })
+            }
+          >
+            <Picker.Item label="Français" value="fr" />
+            <Picker.Item label="Anglais (UK)" value="en" />
+            <Picker.Item label="Espagnol" value="sp" />
+          </Picker>
+        </View>
+
+        <Text>Choisir langue de traduction :</Text>
 
         <Picker
           selectedValue={this.state.langageDeTraduction}
@@ -94,23 +111,33 @@ export default class LearnTranslateScreen extends Component {
           <Picker.Item label="Espagnol" value="sp" />
         </Picker>
 
-        <TouchableOpacity onPress={() => this.ecouterTexteInitial}>
-          <Text>Ecouter texte initial</Text>
+        <TouchableOpacity
+          onPress={() => this.ecouterTexteInitial}
+          style={styles.listeningButton}
+        >
+          <Ionicons name="ios-megaphone" size={25}></Ionicons>
+          <Text style={{ marginLeft: 5 }}>Ecouter</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => this.traduire(
-            this.state.texte,
-            this.state.langageDetecte,
-            this.state.langageDeTraduction
-          )}
+          onPress={() =>
+            this.traduire(
+              this.state.texte,
+              this.state.langageDetecte,
+              this.state.langageDeTraduction
+            )
+          }
+          style={styles.translateButton}
         >
           <Text>Traduire</Text>
         </TouchableOpacity>
 
-        <Text>{this.state.traduction}</Text>
-        <TouchableOpacity onPress={() => this.ecouterTraduction}>
-          <Text>Ecouter traduction</Text>
+        <TouchableOpacity
+          onPress={() => this.ecouterTexteInitial}
+          style={styles.listeningButton}
+        >
+          <Ionicons name="ios-megaphone" size={25}></Ionicons>
+          <Text style={{ marginLeft: 5 }}>Ecouter</Text>
         </TouchableOpacity>
       </View>
     );
@@ -122,7 +149,7 @@ const styles = StyleSheet.create({
     height: "100%",
     display: "flex",
     backgroundColor: "#fff",
-    alignItems: "center",
+    alignItems: "center"
   },
   inputContainer: {
     width: "90%",
@@ -148,5 +175,14 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     marginLeft: 25,
     fontSize: 18
+  },
+
+  listeningButton: {
+    flexDirection: "row"
+  },
+
+  translateButton: {
+    borderColor: "orange",
+    borderWidth: 1
   }
 });
