@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import {
   StyleSheet,
   Text,
@@ -61,20 +62,22 @@ export default class LearnTranslateScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text>LearnTranslateScreen</Text>
-        <TextInput
-          style={{
-            padding: 20,
-            borderWidth: 0,
-            marginVertical: 20,
-            marginHorizontal: 10,
-            elevation: 3
-          }}
-          placeholder="Ton texte"
-          onChangeText={text => this.setState({ texte: text })}
-          onSubmitEditing={e => this.detecterLangue(this.state.texte)}
-        />
+
+        <View style={styles.inputContainer}>
+          <View style={styles.ioniconsSearch}>
+            <Ionicons name="ios-search" size={25}></Ionicons>
+          </View>
+
+          <TextInput
+            style={styles.textToTranslateInput}
+            placeholder="Ecrire le texte à traduire"
+            onChangeText={text => this.setState({ texte: text })}
+            onSubmitEditing={e => this.detecterLangue(this.state.texte)}
+          />
+        </View>
+
         <Text>Identification de la langue : {this.state.langageDetecte}</Text>
+
         <Picker
           selectedValue={this.state.langageDeTraduction}
           style={{ height: 50, width: 200 }}
@@ -86,6 +89,7 @@ export default class LearnTranslateScreen extends Component {
           <Picker.Item label="Anglais (UK)" value="en" />
           <Picker.Item label="Espagnol" value="sp" />
         </Picker>
+
         <TouchableOpacity onPress={this.ecouterTexteInitial}>
           <Text>Ecouter texte initial</Text>
         </TouchableOpacity>
@@ -111,6 +115,34 @@ export default class LearnTranslateScreen extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "blue"
+    height: "100%",
+    display: "flex",
+    backgroundColor: "#fff",
+    alignItems: "center",
+  },
+  inputContainer: {
+    width: "90%",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+    borderWidth: 1,
+    borderColor: "#f1f1f1",
+    borderRadius: 5,
+    marginVertical: 20
+  },
+  ioniconsSearch: {
+    backgroundColor: "#fafafa",
+    paddingVertical: 18,
+    paddingHorizontal: 20,
+    borderRadius: 100
+  },
+  textToTranslateInput: {
+    width: "70%",
+    backgroundColor: "white",
+    marginLeft: 25,
+    fontSize: 18
   }
 });
