@@ -24,16 +24,17 @@ export default class LearnTranslateScreen extends Component {
     this.state = {
       texte: "",
       langagesDetectes: [],
+      langageChoisi: "",
+      pickerValue: [],
       langageDeTraduction: "en",
       traduction: "...",
-      isLoading: true,
-      currentLabel: "Choisissez votre langue"
+      isLoading: true
     };
   }
 
   //METHODES DE NOTRE CLASSE
   ecouterTexteInitial = () => {
-    Speech.speak(this.state.texte, { language: this.state.langagesDetectes });
+    Speech.speak(this.state.texte, { language: this.state.langageChoisi });
   };
 
   ecouterTraduction = () => {
@@ -47,7 +48,10 @@ export default class LearnTranslateScreen extends Component {
       getDetectionLangue(texte)
         .then(jsonResponse => {
           jsonResponse.languages;
-          this.setState({ langagesDetectes: jsonResponse.languages });
+          this.setState({
+            langagesDetectes: jsonResponse.languages,
+            langageChoisi: jsonResponse.languages[0].language
+          });
           // console.log(jsonResponse.languages);
         })
         .catch(error => {
@@ -66,8 +70,11 @@ export default class LearnTranslateScreen extends Component {
     return (langueTrouvee !== undefined) ? langueTrouvee.French_Name.charAt(0).toUpperCase() + langueTrouvee.French_Name.slice(1) : codeIso;
   }
 
-  traduire = (texte, langagesDetectes, langageDeTraduction) => {
-    getTraduction(texte, langagesDetectes, langageDeTraduction)
+  traduire = (texte, langageChoisi, langageDeTraduction) => {
+    console.log(texte);
+    // console.log(langagesDetectes);
+    console.log(langageDeTraduction);
+    getTraduction(texte, langageChoisi, langageDeTraduction)
       .then(responseJson => {
         this.setState({ traduction: responseJson.translations[0].translation });
       })
@@ -76,15 +83,15 @@ export default class LearnTranslateScreen extends Component {
       });
   };
 
-  pickerChange(index) {
-    // this.state.langagesDetectes.map((v, i) => {
-    //   if (index === i) {
-    //     this.setState({
-    //       currentLabel: this.state.langagesDetectes[index].language,
-    //       langagesDetectes: this.state.langagesDetectes[index].language
-    //     });
-    //   }
-    // });
+  pickerChange(value, index) {
+    this.state.langagesDetectes.map((v, i) => {
+      if (index === i) {
+        this.setState({
+          langageChoisi: this.state.langagesDetectes[index].language,
+          pickerValue: this.state.langagesDetectes[index].language
+        })
+      }
+    });
   }
 
   //Action une fois que l'objet est construit
@@ -101,25 +108,20 @@ export default class LearnTranslateScreen extends Component {
         <Picker
           selectedValue={this.state.langagesDetectes[0]}
           style={{ width: 170 }}
-          onValueChange={(itemValue, itemIndex) =>
-            this.pickerChange(itemIndex)
-          }
+          onValueChange={(itemValue, itemIndex) => this.pickerChange(itemIndex)}
         ><Picker.Item label="En attente de texte" value="0" />
         </Picker>)
       : picker = (
         <Picker
-          selectedValue={this.state.langagesDetectes[0]}
+          selectedValue={this.state.pickerValue}
           style={{ width: 170 }}
-          onValueChange={(itemValue, itemIndex) =>
-            this.pickerChange(itemIndex)
-          }
+          onValueChange={(itemValue, itemIndex) => { this.pickerChange(itemValue, itemIndex) }}
         >
           {this.state.langagesDetectes.map(v => <Picker.Item key={v.language} label={this.paysCorrespondant(v.language)} value={v.language} />)}
         </Picker>);
 
     return (
       <View style={styles.container} >
-
         {/* ZONE D'INSERTION DU TEXTE ET DE SON ECOUTE */}
         < View style={styles.inputContainer} >
           <TouchableOpacity onPress={() => this.ecouterTexteInitial()}>
@@ -189,8 +191,8 @@ export default class LearnTranslateScreen extends Component {
                 this.setState({ langageDeTraduction: itemValue });
                 this.traduire(
                   this.state.texte,
-                  this.state.langagesDetectes,
-                  this.state.langageDeTraduction
+                  this.state.langageChoisi,
+                  itemValue
                 );
               }}
             >
@@ -217,7 +219,7 @@ export default class LearnTranslateScreen extends Component {
           onPress={() =>
             this.traduire(
               this.state.texte,
-              this.state.langagesDetectes,
+              this.state.langageChoisi,
               this.state.langageDeTraduction
             )
           }
