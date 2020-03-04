@@ -14,6 +14,9 @@ import {
 } from "./../helpers/langageTranslatorApi";
 import * as Speech from "expo-speech";
 
+import pays1Json from "./../data/iso_639-1.json";
+import pays2Json from "./../data/iso_639-2.json";
+
 export default class LearnTranslateScreen extends Component {
   static navigationOptions = { title: "Traduction" };
 
@@ -56,6 +59,42 @@ export default class LearnTranslateScreen extends Component {
     }
   };
 
+  paysCorrespondant = codeIso => {
+    // https://github.com/haliaeetus/iso-639
+
+    // recherche avec le code a 3 lettres et possedant le nom en francais du pays associe
+    // // const iso2json = require('./../data/iso_639-2.json');
+    // const nav = pays1Json.codeIso["639-2"];
+    // return pays2Json.nav.fr[0];
+    // return iso2json.map(function (item) {
+    //   if (item["639-1"] === codeIso) return item.fr;
+    //   else return "Aucune"
+    // });
+
+    var codeIso3lettres = "";
+
+    for (var key in pays1Json) {
+      if (pays1Json.hasOwnProperty(key)) {
+        if (key.indexOf(String(codeIso)) != -1) {
+          console.log("lol3");
+          console.log(key);
+          codeIso3lettres = (pays1Json[key])["639-2"];
+        }
+      }
+    }
+
+    var pays = "";
+    for (var key in pays2Json) {
+      if (pays2Json.hasOwnProperty(key)) {
+        if (key.indexOf(codeIso3lettres) != -1) {
+          pays = pays2Json[key].fr;
+          return String(pays);
+        }
+      }
+    }
+
+  }
+
   traduire = (texte, langagesDetectes, langageDeTraduction) => {
     getTraduction(texte, langagesDetectes, langageDeTraduction)
       .then(responseJson => {
@@ -67,14 +106,14 @@ export default class LearnTranslateScreen extends Component {
   };
 
   pickerChange(index) {
-    this.state.langagesDetectes.map((v, i) => {
-      if (index === i) {
-        this.setState({
-          currentLabel: this.state.langagesDetectes[index].language,
-          langagesDetectes: this.state.langagesDetectes[index].language
-        });
-      }
-    });
+    // this.state.langagesDetectes.map((v, i) => {
+    //   if (index === i) {
+    //     this.setState({
+    //       currentLabel: this.state.langagesDetectes[index].language,
+    //       langagesDetectes: this.state.langagesDetectes[index].language
+    //     });
+    //   }
+    // });
   }
 
   //Action une fois que l'objet est construit
@@ -84,8 +123,11 @@ export default class LearnTranslateScreen extends Component {
   };
 
   render() {
+    console.log(this.state.langagesDetectes);
     return (
       <View style={styles.container}>
+
+        {/* ZONE D'INSERTION DU TEXTE ET DE SON ECOUTE */}
         <View style={styles.inputContainer}>
           <TouchableOpacity onPress={() => this.ecouterTexteInitial()}>
             <View style={styles.ioniconsMegaphone1}>
@@ -96,6 +138,9 @@ export default class LearnTranslateScreen extends Component {
           <TextInput
             style={styles.textToTranslateInput}
             placeholder="Ecrire le texte à traduire"
+            // onChangeText={text => {
+            //   this.setState({ texte: text }); (this.state.texte === "") ? this.setState({ langagesDetectes: [{ language: "Aucune" }] }) : this.detecterLangue(this.state.texte);
+            // }}
             onChangeText={text => this.setState({ texte: text })}
             onSubmitEditing={e => this.detecterLangue(this.state.texte)}
           />
@@ -128,9 +173,7 @@ export default class LearnTranslateScreen extends Component {
                 this.pickerChange(itemIndex)
               }
             >
-              {this.state.langagesDetectes.map(v => {
-                return <Picker.Item label={v.language} value={v.language} />;
-              })}
+              {this.state.langagesDetectes.map(v => <Picker.Item key={v.language} label={this.paysCorrespondant(v.language)} value={v.language} />)}
             </Picker>
           </View>
         </View>
