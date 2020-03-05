@@ -12,7 +12,7 @@ import paysLangues from "./../data/iso_639-2.json";
 export default class DetectedLanguages extends Component {
     constructor(props) {
         super(props);
-        this.state = { detectedLanguages: [], isDetectingLanguages: true, pickerValue: [] };
+        this.state = { detectedLanguages: [], isDetectingLanguages: false, pickerValue: [] };
     }
 
     // CALLBACKS
@@ -73,7 +73,7 @@ export default class DetectedLanguages extends Component {
     render() {
         // CONDITIONAL DISPLAY
         var picker = "";
-        this.state.detectedLanguages.length === 0
+        (this.props.insertedText === "" || this.state.detectedLanguages.length === 0)
             ? picker = (
                 <Picker
                     selectedValue={this.state.detectedLanguages[0]}

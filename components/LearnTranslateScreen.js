@@ -15,21 +15,11 @@ export default class LearnTranslateScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      texte: "",
-      langagesDetectes: [],
-      langageChoisi: "",
-      pickerValue: [],
-      langageDeTraduction: "en",
-      traduction: "...",
-      isLoadingTraduction: true,
-      isLoadingLangueDetection: true,
-      isLoading: true,
-
-      insertedText: "l",
+      insertedText: "",
       chosenInitialLanguage: "en",
       detectedLanguages: [],
       chosenTranslationLanguage: "fr",
-      translation: "..."
+      translation: ""
     };
   }
 

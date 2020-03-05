@@ -36,6 +36,10 @@ export default class TranslatedText extends Component {
         }
     };
 
+    componentDidMount() {
+
+    }
+
     componentDidUpdate(prevProps) {
         if ((prevProps.insertedText !== this.props.insertedText && this.props.insertedText !== "")
             || prevProps.chosenTranslationLanguage !== this.props.chosenTranslationLanguage
@@ -54,7 +58,7 @@ export default class TranslatedText extends Component {
                 </TouchableOpacity>
 
                 <Text style={styles.textToTranslateInput}>
-                    {this.state.isTranslating ? <ActivityIndicator style={{ width: 170, height: 50 }} /> : this.state.translatedText !== "" ? this.state.translatedText : "En attente de texte..."}
+                    {this.state.isTranslating ? <ActivityIndicator style={{ width: 170, height: 50 }} /> : this.props.insertedText !== "" ? this.state.translatedText : "En attente de texte..."}
                 </Text>
             </View>
         );
