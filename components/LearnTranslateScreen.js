@@ -76,7 +76,6 @@ export default class LearnTranslateScreen extends Component {
           chosenInitialLanguage={chosenInitialLanguage}
           chosenTranslationLanguage={chosenTranslationLanguage}
         />
-        <Text>{chosenInitialLanguage}</Text>
       </View>
     );
   }

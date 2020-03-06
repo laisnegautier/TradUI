@@ -38,7 +38,6 @@ export default class DetectedLanguages extends Component {
           this._onChosenInitialLanguageChange(
             jsonResponse.languages[0].language
           );
-          console.log();
           this.setState({ isDetectingLanguages: false });
         })
         .catch(error => {
