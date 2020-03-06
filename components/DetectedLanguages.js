@@ -122,7 +122,12 @@ export default class DetectedLanguages extends Component {
             {this.state.detectedLanguages.map(v => (
               <Picker.Item
                 key={v.language}
-                label={this.paysCorrespondant(v.language)}
+                label={
+                  this.paysCorrespondant(v.language) +
+                  "                      " +
+                  (v.confidence * 100).toFixed(1) +
+                  "%"
+                }
                 value={v.language}
               />
             ))}

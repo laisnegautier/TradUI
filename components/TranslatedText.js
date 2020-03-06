@@ -50,11 +50,11 @@ export default class TranslatedText extends Component {
   componentDidMount() {}
 
   componentDidUpdate(prevProps) {
-    if (
+    /* if (
       this.props.chosenInitialLanguage == this.props.chosenTranslationLanguage
     ) {
       this.checkUsefulness();
-    } else if (
+    } else */ if (
       (prevProps.insertedText !== this.props.insertedText &&
         this.props.insertedText !== "") ||
       prevProps.chosenTranslationLanguage !==
