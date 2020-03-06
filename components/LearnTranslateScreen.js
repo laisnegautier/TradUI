@@ -1,13 +1,9 @@
 import React, { Component } from "react";
-import {
-  StyleSheet,
-  View
-} from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 import TextToTranslate from "./TextToTranslate";
 import DetectedLanguages from "./DetectedLanguages";
 import TranslationLanguage from "./TranslationLanguage";
 import TranslatedText from "./TranslatedText";
-
 
 export default class LearnTranslateScreen extends Component {
   static navigationOptions = { title: "Traduction" };
@@ -24,14 +20,24 @@ export default class LearnTranslateScreen extends Component {
   }
 
   // HANDLER CALLBACKS
-  handleInsertedTextChange = newInsertedText => this.setState({ insertedText: newInsertedText });
-  handleDetectedLanguagesChange = newDetectedLanguages => this.setState({ detectedLanguages: newDetectedLanguages });
-  handleChosenInitialLanguageChange = newChosenInitialLanguage => this.setState({ chosenInitialLanguage: newChosenInitialLanguage });
-  handleChosenTranslationLanguageChange = newChosenTranslationLanguage => this.setState({ chosenTranslationLanguage: newChosenTranslationLanguage });
+  handleInsertedTextChange = newInsertedText =>
+    this.setState({ insertedText: newInsertedText });
+  handleDetectedLanguagesChange = newDetectedLanguages =>
+    this.setState({ detectedLanguages: newDetectedLanguages });
+  handleChosenInitialLanguageChange = newChosenInitialLanguage => {
+    this.setState({ chosenInitialLanguage: newChosenInitialLanguage });
+    //console.log(newChosenInitialLanguage);
+  };
+  handleChosenTranslationLanguageChange = newChosenTranslationLanguage =>
+    this.setState({ chosenTranslationLanguage: newChosenTranslationLanguage });
 
   //METHODS
   componentDidMount = () => {
-    this.setState({ isLoading: false, isLoadingLangueDetection: false, isLoadingTraduction: false });
+    this.setState({
+      isLoading: false,
+      isLoadingLangueDetection: false,
+      isLoadingTraduction: false
+    });
   };
 
   render() {
@@ -44,11 +50,35 @@ export default class LearnTranslateScreen extends Component {
     // FINAL DISPLAY
     return (
       <View style={styles.container}>
-        <TextToTranslate handleInsertedTextChange={this.handleInsertedTextChange} chosenInitialLanguage={chosenInitialLanguage} />
-        <DetectedLanguages insertedText={insertedText} handleDetectedLanguagesChange={this.handleDetectedLanguagesChange} detectedLanguages={detectedLanguages} chosenInitialLanguage={chosenInitialLanguage} handleChosenInitialLanguageChange={this.handleChosenInitialLanguageChange} />
-        <TranslationLanguage chosenInitialLanguage={chosenInitialLanguage} chosenTranslationLanguage={chosenTranslationLanguage} handleChosenTranslationLanguageChange={this.handleChosenTranslationLanguageChange} />
-        <TranslatedText detectedLanguages={detectedLanguages} insertedText={insertedText} chosenInitialLanguage={chosenInitialLanguage} chosenTranslationLanguage={chosenTranslationLanguage} />
-      </View>);
+        <TextToTranslate
+          handleInsertedTextChange={this.handleInsertedTextChange}
+          chosenInitialLanguage={chosenInitialLanguage}
+        />
+        <DetectedLanguages
+          insertedText={insertedText}
+          handleDetectedLanguagesChange={this.handleDetectedLanguagesChange}
+          detectedLanguages={detectedLanguages}
+          chosenInitialLanguage={chosenInitialLanguage}
+          handleChosenInitialLanguageChange={
+            this.handleChosenInitialLanguageChange
+          }
+        />
+        <TranslationLanguage
+          chosenInitialLanguage={chosenInitialLanguage}
+          chosenTranslationLanguage={chosenTranslationLanguage}
+          handleChosenTranslationLanguageChange={
+            this.handleChosenTranslationLanguageChange
+          }
+        />
+        <TranslatedText
+          detectedLanguages={detectedLanguages}
+          insertedText={insertedText}
+          chosenInitialLanguage={chosenInitialLanguage}
+          chosenTranslationLanguage={chosenTranslationLanguage}
+        />
+        <Text>{chosenInitialLanguage}</Text>
+      </View>
+    );
   }
 }
 
