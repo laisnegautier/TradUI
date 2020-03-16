@@ -18,14 +18,25 @@ export default class TranslatedText extends Component {
 
     listenToTranslatedText = () => {
         this.state.translatedText !== ""
-            ? Speech.speak(this.state.translatedText, { language: this.props.chosenTranslationLanguage })
-            : alert("Veuillez insérer du texte avant d'utiliser cette fonctionnalité.")
+            ? Speech.speak(this.state.translatedText, {
+                language: this.props.chosenTranslationLanguage
+            })
+            : alert(
+                "Veuillez insérer du texte avant d'utiliser cette fonctionnalité."
+            );
     };
+
+    checkUsefulness = () =>
+        alert("Hum hum cela ne sert à rien de traduire dans une même langue...");
 
     translate = () => {
         if (this.props.insertedText !== "") {
             this.setState({ isTranslating: true });
-            getTraduction(this.props.insertedText, this.props.chosenInitialLanguage, this.props.chosenTranslationLanguage)
+            getTraduction(
+                this.props.insertedText,
+                this.props.chosenInitialLanguage,
+                this.props.chosenTranslationLanguage
+            )
                 .then(responseJson => {
                     this.setState({
                         translatedText: responseJson.translations[0].translation,
@@ -36,13 +47,21 @@ export default class TranslatedText extends Component {
         }
     };
 
-    componentDidMount() {
-    }
+    componentDidMount() { }
 
     componentDidUpdate(prevProps) {
-        if ((prevProps.insertedText !== this.props.insertedText && this.props.insertedText !== "")
-            || prevProps.chosenTranslationLanguage !== this.props.chosenTranslationLanguage
-            || prevProps.chosenInitialLanguage !== this.props.chosenInitialLanguage) {
+    /* if (
+      this.props.chosenInitialLanguage == this.props.chosenTranslationLanguage
+    ) {
+      this.checkUsefulness();
+    } else */ if (
+            (prevProps.insertedText !== this.props.insertedText &&
+                this.props.insertedText !== "") ||
+            prevProps.chosenTranslationLanguage !==
+            this.props.chosenTranslationLanguage ||
+            prevProps.chosenInitialLanguage !== this.props.chosenInitialLanguage
+        ) {
+            //console.log(this.checkLanguages());
             this.translate();
         }
     }
@@ -57,7 +76,13 @@ export default class TranslatedText extends Component {
                 </TouchableOpacity>
 
                 <Text style={styles.textToTranslateInput}>
-                    {this.state.isTranslating ? <ActivityIndicator style={{ width: 170, height: 50 }} /> : this.props.insertedText !== "" ? this.state.translatedText : "En attente de texte..."}
+                    {this.state.isTranslating ? (
+                        <ActivityIndicator style={{ width: 170, height: 50 }} />
+                    ) : this.props.insertedText !== "" ? (
+                        this.state.translatedText
+                    ) : (
+                                "En attente de texte..."
+                            )}
                 </Text>
             </View>
         );
