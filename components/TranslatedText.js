@@ -37,7 +37,6 @@ export default class TranslatedText extends Component {
     };
 
     componentDidMount() {
-
     }
 
     componentDidUpdate(prevProps) {
