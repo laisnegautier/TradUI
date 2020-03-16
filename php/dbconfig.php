@@ -1,5 +1,6 @@
 <?php
 
+/** USED FOR CONNEcTION WITH DB */
 $HostName = "localhost";
 $DatabaseName = "id12940278_projetdevmob";
 $DatabaseUser = "id12940278_laisnejouault";
