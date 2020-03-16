@@ -17,7 +17,8 @@ export default class PlayFindlanguageScreen extends Component {
       prenom: "",
       reponse: "",
       isLoading: false,
-      disabled: false
+      disabled: false,
+      questions: []
     };
   }
 
