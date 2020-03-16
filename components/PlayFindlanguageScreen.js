@@ -1,5 +1,13 @@
 import React, { Component } from "react";
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator
+} from "react-native";
 
 export default class PlayFindlanguageScreen extends Component {
   constructor(props) {
@@ -16,30 +24,33 @@ export default class PlayFindlanguageScreen extends Component {
   create = () => {
     this.setState({ isLoading: true, disabled: true });
 
-    fetch('http://projet-dev-mobile-laisnejouault.000webhostapp.com/create.php', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        nom: this.state.nom,
-        prenom: this.state.prenom,
-        resultat: this.state.resultat
-      })
-
-    }).then((response) => response.json())
-      .then((responseJson) => {
+    fetch(
+      "http://projet-dev-mobile-laisnejouault.000webhostapp.com/create.php",
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          nom: this.state.nom,
+          prenom: this.state.prenom,
+          resultat: this.state.resultat
+        })
+      }
+    )
+      .then(response => response.json())
+      .then(responseJson => {
         console.log(responseJson);
         // Showing response message coming from server after inserting records.
         alert(responseJson);
         this.setState({ isLoading: false, disabled: false });
-
-      }).catch((error) => {
+      })
+      .catch(error => {
         console.error(error);
         this.setState({ isLoading: false, disabled: false });
       });
-  }
+  };
 
   //Action une fois que l'objet est construit
   componentDidMount = () => {
@@ -54,7 +65,6 @@ export default class PlayFindlanguageScreen extends Component {
           <Text>PlayFindlanguageScreen</Text>
         </View>
         <View style={styles.MainContainer}>
-
           <Text style={styles.title}>Create Form</Text>
 
           {this.state.isLoading ? <ActivityIndicator size="large" /> : null}
@@ -73,8 +83,13 @@ export default class PlayFindlanguageScreen extends Component {
             onChangeText={text => this.setState({ resultat: text })}
             style={styles.TextInputStyleClass}
           />
-          <TouchableOpacity disabled={this.state.disabled} onPress={() => this.create()}>
-            <View><Text>Create</Text></View>
+          <TouchableOpacity
+            disabled={this.state.disabled}
+            onPress={() => this.create()}
+          >
+            <View>
+              <Text>Create</Text>
+            </View>
           </TouchableOpacity>
         </View>
       </View>
@@ -87,8 +102,7 @@ const styles = StyleSheet.create({
     backgroundColor: "lightgray"
   },
   MainContainer: {
-
-    justifyContent: 'center',
+    justifyContent: "center",
     backgroundColor: "white",
     elevation: 4,
     margin: 10,
@@ -96,20 +110,18 @@ const styles = StyleSheet.create({
   },
 
   TextInputStyleClass: {
-
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 7,
     height: 40,
     borderWidth: 1,
-    borderColor: '#2196F3',
-    borderRadius: 5,
+    borderColor: "#2196F3",
+    borderRadius: 5
   },
 
   title: {
-
     fontSize: 22,
     color: "#009688",
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 15
   }
 });
