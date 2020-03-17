@@ -13,8 +13,7 @@ if ($connection->connect_error) {
 
 $json = json_decode(file_get_contents('php://input'), true);
 
-$queryQuestions = "SELECT word from question";
-$queryDefaultAnswer = "SELECT defaultAnswer from question where question.Id =1";
+$queryQuestions = "SELECT * from question";
 
 $query_result = $connection->query($queryQuestions);
 

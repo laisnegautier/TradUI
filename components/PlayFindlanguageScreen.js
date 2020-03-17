@@ -53,6 +53,31 @@ export default class PlayFindlanguageScreen extends Component {
       });
   };
 
+  getQuestions = () => {
+    this.setState({ isLoading: true, disabled: true });
+
+    fetch(
+      "http://projet-dev-mobile-laisnejouault.000webhostapp.com/query.php",
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        }
+      }
+    )
+      .then(response => response.json())
+      .then(responseJson => {
+        console.log(responseJson);
+        // Showing response message coming from server after inserting records.
+        this.setState({ isLoading: false, disabled: false });
+      })
+      .catch(error => {
+        console.error(error);
+        this.setState({ isLoading: false, disabled: false });
+      });
+  };
+
   //Action une fois que l'objet est construit
   componentDidMount = () => {
     //Actions à effectuer
@@ -69,6 +94,7 @@ export default class PlayFindlanguageScreen extends Component {
           <Text style={styles.title}>Create Form</Text>
 
           {this.state.isLoading ? <ActivityIndicator size="large" /> : null}
+          <Text>Quelle est la langue du mot {this.state.prenom}</Text>
           <TextInput
             placeholder="Enter Nom"
             onChangeText={text => this.setState({ nom: text })}
@@ -90,6 +116,15 @@ export default class PlayFindlanguageScreen extends Component {
           >
             <View>
               <Text>Create</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            disabled={this.state.disabled}
+            onPress={() => this.getQuestions()}
+          >
+            <View>
+              <Text>getQuestions</Text>
             </View>
           </TouchableOpacity>
         </View>
