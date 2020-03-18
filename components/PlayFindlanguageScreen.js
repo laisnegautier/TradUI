@@ -18,7 +18,7 @@ export default class PlayFindlanguageScreen extends Component {
       reponse: "",
       isLoading: false,
       disabled: false,
-      questions: []
+      questionsData: ""
     };
   }
 
@@ -56,21 +56,20 @@ export default class PlayFindlanguageScreen extends Component {
   getQuestions = () => {
     this.setState({ isLoading: true, disabled: true });
 
-    fetch(
-      "http://projet-dev-mobile-laisnejouault.000webhostapp.com/query.php",
+    fetch("http://projet-dev-mobile-laisnejouault.000webhostapp.com/query.php",
       {
-        method: "POST",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json"
-        }
+        },
+        method: "POST"
       }
     )
       .then(response => response.json())
       .then(responseJson => {
         console.log(responseJson);
         // Showing response message coming from server after inserting records.
-        this.setState({ isLoading: false, disabled: false });
+        this.setState({ questionsData: responseJson, isLoading: false, disabled: false });
       })
       .catch(error => {
         console.error(error);
@@ -125,6 +124,11 @@ export default class PlayFindlanguageScreen extends Component {
           >
             <View>
               <Text>getQuestions</Text>
+              <Text>{this.state.questionsData !== "" ?
+                this.state.questionsData.map((x) => {
+                  return (<Text key={x.quest_id}>id: "{x.quest_id}", quest_word: "{x.quest_word}", quest_language: "{x.quest_language}", quest_frenchTranslation: "{x.quest_frenchTranslation}"{"\n"}{"\n"}</Text>);
+                })
+                : ""}</Text>
             </View>
           </TouchableOpacity>
         </View>
