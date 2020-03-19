@@ -13,30 +13,62 @@ export default class PlayFindlanguageScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      nom: "",
-      prenom: "",
-      reponse: "",
       isLoading: false,
       disabled: false,
-      compteur: 1
+      count: 1, // pour gérer l'ordre des questions
+      answer: ""
     };
   }
 
   checkLanguage = () => {
-    //if(question.quest_language=)
+    //vérifie que c'est la bonne réponse. Si oui, passe à la suivant sinon, réessaye.
+    // +1 pt pr le joueur
+  };
+
+  create = () => {
+    this.setState({ isLoading: true, disabled: true });
+
+    fetch(
+      "http://projet-dev-mobile-laisnejouault.000webhostapp.com/addAnswer.php",
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          answer: this.state.answer
+        })
+      }
+    )
+      .then(response => response.json())
+      .then(responseJson => {
+        console.log(responseJson);
+        // Showing response message coming from server after inserting records.
+        alert(responseJson);
+        this.setState({ isLoading: false, disabled: false });
+      })
+      .catch(error => {
+        console.error(error);
+        this.setState({ isLoading: false, disabled: false });
+      });
   };
 
   render() {
-    var questionsData = this.props;
-    const question = questionsData.find(
-      e => (e.quest_id = this.state.compteur)
-    );
+    /*const mot = "yo";
+    const questions = this.props;
+    for (const e of questions) {
+      if (e.quest_order == compteur) {
+        mot = e.quest_word;
+      }
+    }
+    console.log(mot);*/
     return (
       <View>
-        <Text>Quelle est la langue du mot {question.quest_word} ?</Text>
+        <Text>Quelle est la langue du mot ?</Text>
         <TextInput
           placeholder="Enter Resultat"
-          onChangeText={text => this.setState({ resultat: text })}
+          onChangeText={text => this.setState({ answer: text })}
           style={styles.TextInputStyleClass}
         />
         <TouchableOpacity
@@ -45,8 +77,24 @@ export default class PlayFindlanguageScreen extends Component {
         >
           <Text>Confirmer</Text>
         </TouchableOpacity>
-        <Text>Langue : {question.quest_language}</Text>
-        <Text>Traduction : {question.quest_frenchTranslation} </Text>
+        <Text>Langue : </Text>
+        <Text>Traduction :</Text>
+
+        <TouchableOpacity
+          style={styles.container}
+          onPress={() => this.create()} // ajoute une réponse
+        >
+          <Text>J'avais raison</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.container}
+          onPress={() => {
+            count++;
+            his.navigation.navigate("PlayFindlanguage");
+          }} // passe à la question suivante
+        >
+          <Text>Passer cette question</Text>
+        </TouchableOpacity>
       </View>
     );
   }
