@@ -3,13 +3,14 @@ import { StyleSheet, Text, View } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import LearnTranslateScreen from "./../components/LearnTranslateScreen";
 import LearnWordcontextScreen from "./../components/LearnWordcontextScreen";
+import PlayBeginScreen from "./../components/PlayBeginScreen";
 import PlayFindlanguageScreen from "./../components/PlayFindlanguageScreen";
 import { createAppContainer } from "react-navigation";
 import { createStackNavigator } from "react-navigation-stack";
 import { createBottomTabNavigator } from "react-navigation-tabs";
 
 const defaultNavigationOptions = {
-  title: 'HeaderTitle',
+  title: "HeaderTitle",
   headerStyle: {
     backgroundColor: "#fafafa"
   },
@@ -47,7 +48,12 @@ const LearnStack = createStackNavigator(
 
 const PlayStack = createStackNavigator(
   {
-    PlayFindlanguage: PlayFindlanguageScreen
+    PlayBegin: {
+      screen: PlayBeginScreen
+    },
+    PlayFindlanguage: {
+      screen: PlayFindlanguageScreen
+    }
   },
   {
     defaultNavigationOptions: defaultNavigationOptions

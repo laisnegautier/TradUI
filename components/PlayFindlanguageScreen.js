@@ -18,120 +18,35 @@ export default class PlayFindlanguageScreen extends Component {
       reponse: "",
       isLoading: false,
       disabled: false,
-      questionsData: ""
+      compteur: 1
     };
   }
 
-  create = () => {
-    this.setState({ isLoading: true, disabled: true });
-
-    fetch(
-      "http://projet-dev-mobile-laisnejouault.000webhostapp.com/create.php",
-      {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          nom: this.state.nom,
-          prenom: this.state.prenom,
-          resultat: this.state.resultat
-        })
-      }
-    )
-      .then(response => response.json())
-      .then(responseJson => {
-        console.log(responseJson);
-        // Showing response message coming from server after inserting records.
-        alert(responseJson);
-        this.setState({ isLoading: false, disabled: false });
-      })
-      .catch(error => {
-        console.error(error);
-        this.setState({ isLoading: false, disabled: false });
-      });
-  };
-
-  getQuestions = () => {
-    this.setState({ isLoading: true, disabled: true });
-
-    fetch("http://projet-dev-mobile-laisnejouault.000webhostapp.com/query.php",
-      {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json"
-        },
-        method: "POST"
-      }
-    )
-      .then(response => response.json())
-      .then(responseJson => {
-        console.log(responseJson);
-        // Showing response message coming from server after inserting records.
-        this.setState({ questionsData: responseJson, isLoading: false, disabled: false });
-      })
-      .catch(error => {
-        console.error(error);
-        this.setState({ isLoading: false, disabled: false });
-      });
-  };
-
-  //Action une fois que l'objet est construit
-  componentDidMount = () => {
-    //Actions à effectuer
-    // this.setState({ isLoading: false });
+  checkLanguage = () => {
+    //if(question.quest_language=)
   };
 
   render() {
+    var questionsData = this.props;
+    const question = questionsData.find(
+      e => (e.quest_id = this.state.compteur)
+    );
     return (
       <View>
-        <View style={styles.container}>
-          <Text>PlayFindlanguageScreen</Text>
-        </View>
-        <View style={styles.MainContainer}>
-          <Text style={styles.title}>Create Form</Text>
-
-          {this.state.isLoading ? <ActivityIndicator size="large" /> : null}
-          <Text>Quelle est la langue du mot {this.state.prenom}</Text>
-          <TextInput
-            placeholder="Enter Nom"
-            onChangeText={text => this.setState({ nom: text })}
-            style={styles.TextInputStyleClass}
-          />
-          <TextInput
-            placeholder="Enter Prenom"
-            onChangeText={text => this.setState({ prenom: text })}
-            style={styles.TextInputStyleClass}
-          />
-          <TextInput
-            placeholder="Enter Resultat"
-            onChangeText={text => this.setState({ resultat: text })}
-            style={styles.TextInputStyleClass}
-          />
-          <TouchableOpacity
-            disabled={this.state.disabled}
-            onPress={() => this.create()}
-          >
-            <View>
-              <Text>Create</Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            disabled={this.state.disabled}
-            onPress={() => this.getQuestions()}
-          >
-            <View>
-              <Text>getQuestions</Text>
-              <Text>{this.state.questionsData !== "" ?
-                this.state.questionsData.map((x) => {
-                  return (<Text key={x.quest_id}>id: "{x.quest_id}", quest_word: "{x.quest_word}", quest_language: "{x.quest_language}", quest_frenchTranslation: "{x.quest_frenchTranslation}"{"\n"}{"\n"}</Text>);
-                })
-                : ""}</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
+        <Text>Quelle est la langue du mot {question.quest_word} ?</Text>
+        <TextInput
+          placeholder="Enter Resultat"
+          onChangeText={text => this.setState({ resultat: text })}
+          style={styles.TextInputStyleClass}
+        />
+        <TouchableOpacity
+          style={styles.container}
+          //onPress={() => this.checkAnswer()}
+        >
+          <Text>Confirmer</Text>
+        </TouchableOpacity>
+        <Text>Langue : {question.quest_language}</Text>
+        <Text>Traduction : {question.quest_frenchTranslation} </Text>
       </View>
     );
   }
