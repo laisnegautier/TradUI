@@ -13,7 +13,7 @@ if ($connection->connect_error) {
 
 $json = json_decode(file_get_contents('php://input'), true);
 
-$queryQuestions = "SELECT * from question";
+$queryQuestions = "SELECT quest_word FROM question";
 
 $query_result = $connection->query($queryQuestions);
 
