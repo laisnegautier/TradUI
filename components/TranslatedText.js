@@ -55,21 +55,19 @@ export default class TranslatedText extends Component {
     alert("Hum hum cela ne sert à rien de traduire dans une même langue...");
   }
 
-  componentDidMount = () => {
-  }
-
   componentDidUpdate = (prevProps) => {
     if (this.props.insertedText !== "") {
       if (prevProps.insertedText !== this.props.insertedText
         || prevProps.chosenInitialLanguage !== this.props.chosenInitialLanguage
-        || prevProps.chosenTranslationLanguage !== this.props.chosenTranslationLanguage) {
+        || prevProps.chosenTranslationLanguage !== this.props.chosenTranslationLanguage
+      ) {
         this.translate();
       }
     }
 
     // If the text is empty after modification then we stop all
     if (prevProps.insertedText !== this.props.insertedText && this.props.insertedText === "") {
-      this.setState({ translatedText: [], isTranslating: false });
+      this.setState({ translatedText: "", isTranslating: false });
     }
   }
 
