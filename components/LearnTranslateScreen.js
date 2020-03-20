@@ -12,7 +12,7 @@ export default class LearnTranslateScreen extends Component {
     super(props);
     this.state = {
       insertedText: "",
-      chosenInitialLanguage: "en",
+      chosenInitialLanguage: "",
       detectedLanguages: [],
       chosenTranslationLanguage: "fr",
       translation: ""
@@ -24,14 +24,12 @@ export default class LearnTranslateScreen extends Component {
     this.setState({ insertedText: newInsertedText });
   handleDetectedLanguagesChange = newDetectedLanguages =>
     this.setState({ detectedLanguages: newDetectedLanguages });
-  handleChosenInitialLanguageChange = newChosenInitialLanguage => {
+  handleChosenInitialLanguageChange = newChosenInitialLanguage =>
     this.setState({ chosenInitialLanguage: newChosenInitialLanguage });
-    //console.log(newChosenInitialLanguage);
-  };
   handleChosenTranslationLanguageChange = newChosenTranslationLanguage =>
     this.setState({ chosenTranslationLanguage: newChosenTranslationLanguage });
 
-  //METHODS
+  // METHODS
   componentDidMount = () => {
     this.setState({
       isLoading: false,

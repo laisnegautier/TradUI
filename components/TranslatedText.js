@@ -13,21 +13,21 @@ import * as Speech from "expo-speech";
 export default class TranslatedText extends Component {
   constructor(props) {
     super(props);
-    this.state = { translatedText: "", isTranslating: false };
+    this.state = {
+      translatedText: "",
+      isTranslating: false
+    };
   }
 
   listenToTranslatedText = () => {
     this.state.translatedText !== ""
       ? Speech.speak(this.state.translatedText, {
-          language: this.props.chosenTranslationLanguage
-        })
+        language: this.props.chosenTranslationLanguage
+      })
       : alert(
-          "Veuillez insérer du texte avant d'utiliser cette fonctionnalité."
-        );
+        "Veuillez insérer du texte avant d'utiliser cette fonctionnalité."
+      );
   };
-
-  checkUsefulness = () =>
-    alert("Hum hum cela ne sert à rien de traduire dans une même langue...");
 
   translate = () => {
     if (this.props.insertedText !== "") {
@@ -43,27 +43,52 @@ export default class TranslatedText extends Component {
             isTranslating: false
           });
         })
-        .catch(error => {});
+        .catch(error => { });
     }
   };
 
-  componentDidMount() {}
+  // ERRORS
+  checkUsefulness = () => {
+    alert("Hum hum cela ne sert à rien de traduire dans une même langue...");
+  }
+
+  componentDidMount() {
+    if (this.props.chosenInitialLanguage === this.props.chosenTranslationLanguage) {
+      this.checkUsefulness();
+    }
+  }
 
   componentDidUpdate(prevProps) {
-    /* if (
-      this.props.chosenInitialLanguage == this.props.chosenTranslationLanguage
+    if (
+      prevProps.insertedText !== this.props.insertedText &&
+      this.props.insertedText !== "" &&
+      this.props.insertedText !== " "
     ) {
-      this.checkUsefulness();
-    } else */ if (
-      (prevProps.insertedText !== this.props.insertedText &&
-        this.props.insertedText !== "") ||
-      prevProps.chosenTranslationLanguage !==
-        this.props.chosenTranslationLanguage ||
-      prevProps.chosenInitialLanguage !== this.props.chosenInitialLanguage
-    ) {
-      //console.log(this.checkLanguages());
       this.translate();
     }
+    if (
+      (prevProps.insertedText !== this.props.insertedText &&
+        this.props.insertedText === "") ||
+      (prevProps.insertedText !== this.props.insertedText &&
+        this.props.insertedText === " ")
+    ) {
+      this.setState({ translatedText: "", isTranslating: false });
+    }
+
+    // if (this.props.insertedText !== "" && this.props.insertedText !== " ") {
+
+    //   if (prevProps.insertedText !== this.props.insertedText) {
+
+    //     if (this.props.chosenInitialLanguage === this.props.chosenTranslationLanguage) {
+    //       this.checkUsefulness();
+    //     }
+    //     else {
+    //       this.translate();
+    //     }
+    //   }
+    // }
+
+
   }
 
   render() {
@@ -78,11 +103,9 @@ export default class TranslatedText extends Component {
         <Text style={styles.textToTranslateInput}>
           {this.state.isTranslating ? (
             <ActivityIndicator style={{ width: 170, height: 50 }} />
-          ) : this.props.insertedText !== "" ? (
+          ) : (this.props.insertedText !== "" && this.props.insertedText !== " ") ? (
             this.state.translatedText
-          ) : (
-            "En attente de texte..."
-          )}
+          ) : ("En attente de texte...")}
         </Text>
       </View>
     );

@@ -10,7 +10,6 @@ import { createStackNavigator } from "react-navigation-stack";
 import { createBottomTabNavigator } from "react-navigation-tabs";
 
 const defaultNavigationOptions = {
-  title: "HeaderTitle",
   headerStyle: {
     backgroundColor: "#fafafa"
   },

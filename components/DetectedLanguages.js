@@ -56,7 +56,7 @@ export default class DetectedLanguages extends Component {
     // on met en majuscule la premiere lettre
     return langueTrouvee !== undefined
       ? langueTrouvee.French_Name.charAt(0).toUpperCase() +
-          langueTrouvee.French_Name.slice(1)
+      langueTrouvee.French_Name.slice(1)
       : codeIso;
   };
 
@@ -75,7 +75,7 @@ export default class DetectedLanguages extends Component {
   }
 
   componentDidMount() {
-    if (this.props.insertedText !== "") {
+    if (this.props.insertedText !== "" && this.props.insertedText !== " ") {
       this.detecterLangue(this.props.insertedText);
     }
   }
@@ -83,15 +83,20 @@ export default class DetectedLanguages extends Component {
   componentDidUpdate(prevProps) {
     if (
       prevProps.insertedText !== this.props.insertedText &&
-      this.props.insertedText !== ""
+      this.props.insertedText !== "" &&
+      this.props.insertedText !== " "
     ) {
       this.setState({ pickerValue: [] });
       this.detecterLangue(this.props.insertedText);
     }
     if (
-      prevProps.insertedText !== this.props.insertedText &&
-      this.props.insertedText === ""
+      (prevProps.insertedText !== this.props.insertedText &&
+        this.props.insertedText === "") ||
+      (prevProps.insertedText !== this.props.insertedText &&
+        this.props.insertedText === " ")
     ) {
+      this._onDetectedLanguagesChange([]);
+      this._onChosenInitialLanguageChange("");
       this.setState({ detectedLanguages: [], isDetectingLanguages: false });
     }
   }
@@ -101,38 +106,38 @@ export default class DetectedLanguages extends Component {
     var picker = "";
     this.props.insertedText === "" || this.state.detectedLanguages.length === 0
       ? (picker = (
-          <Picker
-            selectedValue={this.state.detectedLanguages[0]}
-            style={{ width: 170 }}
-            onValueChange={(itemValue, itemIndex) =>
-              this.pickerChange(itemIndex)
-            }
-          >
-            <Picker.Item label="En attente de texte" value="0" />
-          </Picker>
-        ))
+        <Picker
+          selectedValue={this.state.detectedLanguages[0]}
+          style={{ width: 170 }}
+          onValueChange={(itemValue, itemIndex) =>
+            this.pickerChange(itemIndex)
+          }
+        >
+          <Picker.Item label="En attente de texte" value="0" />
+        </Picker>
+      ))
       : (picker = (
-          <Picker
-            selectedValue={this.state.pickerValue}
-            style={{ width: 170 }}
-            onValueChange={(itemValue, itemIndex) => {
-              this.pickerChange(itemValue, itemIndex);
-            }}
-          >
-            {this.state.detectedLanguages.map(v => (
-              <Picker.Item
-                key={v.language}
-                label={
-                  this.paysCorrespondant(v.language) +
-                  "                      " +
-                  (v.confidence * 100).toFixed(1) +
-                  "%"
-                }
-                value={v.language}
-              />
-            ))}
-          </Picker>
-        ));
+        <Picker
+          selectedValue={this.state.pickerValue}
+          style={{ width: 170 }}
+          onValueChange={(itemValue, itemIndex) => {
+            this.pickerChange(itemValue, itemIndex);
+          }}
+        >
+          {this.state.detectedLanguages.map(v => (
+            <Picker.Item
+              key={v.language}
+              label={
+                this.paysCorrespondant(v.language) +
+                "                      " +
+                (v.confidence * 100).toFixed(1) +
+                "%"
+              }
+              value={v.language}
+            />
+          ))}
+        </Picker>
+      ));
 
     // FINAL DISPLAY
     return (
@@ -142,8 +147,8 @@ export default class DetectedLanguages extends Component {
           {this.state.isDetectingLanguages ? (
             <ActivityIndicator style={{ width: 170, height: 50 }} />
           ) : (
-            picker
-          )}
+              picker
+            )}
         </View>
       </View>
     );

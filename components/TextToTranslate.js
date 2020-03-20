@@ -6,22 +6,35 @@ import * as Speech from "expo-speech";
 export default class TextToTranslate extends Component {
   constructor(props) {
     super(props);
-    this.state = { insertedText: "" };
+    this.state = { insertedText: "", timeout: 0 };
   }
 
   // CALLBACKS
-  _onInsertedTextChange = newInsertedText =>
-    this.props.handleInsertedTextChange(newInsertedText);
+  _onInsertedTextChange = newInsertedText => {
+    // get rid of multiple white spaces
+    newInsertedText = newInsertedText.replace(/\s+/g, ' ');
+
+    // if there's text, we are sending it 1/2 second after the end of typing
+    if (newInsertedText !== "") {
+      if (this.state.timeout) clearTimeout(this.state.timeout);
+      this.state.timeout = setTimeout(() => {
+        this.props.handleInsertedTextChange(newInsertedText);
+      }, 500);
+    }
+    else {
+      this.props.handleInsertedTextChange(newInsertedText);
+    }
+  }
 
   // METHODS
   listenToInsertedText = () => {
     this.state.insertedText !== ""
       ? Speech.speak(this.state.insertedText, {
-          language: this.props.chosenInitialLanguage
-        })
+        language: this.props.chosenInitialLanguage
+      })
       : alert(
-          "Veuillez insérer du texte avant d'utiliser cette fonctionnalité."
-        );
+        "Veuillez insérer du texte avant d'utiliser cette fonctionnalité."
+      );
   };
 
   render() {
