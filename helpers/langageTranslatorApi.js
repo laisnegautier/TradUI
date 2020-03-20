@@ -14,7 +14,7 @@ export const getDetectionLangue = texte =>
         method: "POST"
     })
         .then(response => response.json())
-        .catch(function (error) {
+        .catch(error => {
             console.log('Un problème est survenu lors de la détection de la langue : ' + error.message);
             throw error;
         });
@@ -33,7 +33,7 @@ export const getTraduction = (texte, langageDetecte, langageDeTraduction) =>
         method: "POST"
     })
         .then(response => response.json())
-        .catch(function (error) {
+        .catch(error => {
             console.log('Un problème est survenu lors de la traduction : ' + error.message);
             throw error;
         });

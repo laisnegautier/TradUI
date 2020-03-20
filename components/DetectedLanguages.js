@@ -27,23 +27,21 @@ export default class DetectedLanguages extends Component {
 
   // METHODS
   detecterLangue = texte => {
-    if (this.props.insertedText !== "") {
-      this.setState({ isDetectingLanguages: true });
+    this.setState({ isDetectingLanguages: true });
 
-      getDetectionLangue(texte)
-        .then(jsonResponse => {
-          jsonResponse.languages;
-          this.setState({ detectedLanguages: jsonResponse.languages });
-          this._onDetectedLanguagesChange(jsonResponse.languages);
-          this._onChosenInitialLanguageChange(
-            jsonResponse.languages[0].language
-          );
-          this.setState({ isDetectingLanguages: false });
-        })
-        .catch(error => {
-          alert(error.message);
-        });
-    }
+    getDetectionLangue(texte)
+      .then(jsonResponse => {
+        jsonResponse.languages;
+        this.setState({ detectedLanguages: jsonResponse.languages });
+        this._onDetectedLanguagesChange(jsonResponse.languages);
+        this._onChosenInitialLanguageChange(
+          jsonResponse.languages[0].language
+        );
+        this.setState({ isDetectingLanguages: false });
+      })
+      .catch(error => {
+        alert(error.message);
+      });
   };
 
   paysCorrespondant = codeIso => {
@@ -74,27 +72,20 @@ export default class DetectedLanguages extends Component {
     });
   }
 
-  componentDidMount() {
-    if (this.props.insertedText !== "" && this.props.insertedText !== " ") {
+  componentDidMount = () => {
+    if (this.props.insertedText !== "")
       this.detecterLangue(this.props.insertedText);
-    }
   }
 
-  componentDidUpdate(prevProps) {
-    if (
-      prevProps.insertedText !== this.props.insertedText &&
-      this.props.insertedText !== "" &&
-      this.props.insertedText !== " "
-    ) {
+  componentDidUpdate = (prevProps) => {
+    // If the text is not empty after modification then we start detection
+    if (prevProps.insertedText !== this.props.insertedText && this.props.insertedText !== "") {
       this.setState({ pickerValue: [] });
       this.detecterLangue(this.props.insertedText);
     }
-    if (
-      (prevProps.insertedText !== this.props.insertedText &&
-        this.props.insertedText === "") ||
-      (prevProps.insertedText !== this.props.insertedText &&
-        this.props.insertedText === " ")
-    ) {
+
+    // If the text is empty after modification then we stop all detection occuring
+    if (prevProps.insertedText !== this.props.insertedText && this.props.insertedText === "") {
       this._onDetectedLanguagesChange([]);
       this._onChosenInitialLanguageChange("");
       this.setState({ detectedLanguages: [], isDetectingLanguages: false });
@@ -102,7 +93,7 @@ export default class DetectedLanguages extends Component {
   }
 
   render() {
-    // CONDITIONAL DISPLAY
+    // CONDITIONAL DISPLAY concerning the picker (if it has some detected languages to display or not + percentages)
     var picker = "";
     this.props.insertedText === "" || this.state.detectedLanguages.length === 0
       ? (picker = (

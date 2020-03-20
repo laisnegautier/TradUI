@@ -9,20 +9,34 @@ export default class TextToTranslate extends Component {
     this.state = { insertedText: "", timeout: 0 };
   }
 
+  // We get rid of multiple white spaces in the sentence and at both ends of the string
+  // The formatted text is either empty or with well formatted string (a single space is not possible for example)
+  formattedText = t => {
+    if (t !== "" && t !== " ") t = t.replace(/\s+/g, ' ').trim();
+    return t;
+  }
+
   // CALLBACKS
   _onInsertedTextChange = newInsertedText => {
-    // get rid of multiple white spaces
-    newInsertedText = newInsertedText.replace(/\s+/g, ' ');
+    var formattedText = this.formattedText(newInsertedText);
 
     // if there's text, we are sending it 1/2 second after the end of typing
-    if (newInsertedText !== "") {
-      if (this.state.timeout) clearTimeout(this.state.timeout);
+    if (formattedText !== "" && formattedText !== " ") {
+
+      if (this.state.timeout) {
+        clearTimeout(this.state.timeout);
+      }
+
       this.state.timeout = setTimeout(() => {
-        this.props.handleInsertedTextChange(newInsertedText);
+        this.props.handleInsertedTextChange(formattedText);
       }, 500);
     }
     else {
-      this.props.handleInsertedTextChange(newInsertedText);
+      if (this.state.timeout) {
+        clearTimeout(this.state.timeout);
+      }
+
+      this.props.handleInsertedTextChange("");
     }
   }
 
@@ -52,10 +66,6 @@ export default class TextToTranslate extends Component {
           onChangeText={newInsertedText => {
             this.setState({ insertedText: newInsertedText });
             this._onInsertedTextChange(newInsertedText);
-          }}
-          onSubmitEditing={event => {
-            this.setState({ insertedText: event.nativeEvent.text });
-            this._onInsertedTextChange(event.nativeEvent.text);
           }}
         />
       </View>

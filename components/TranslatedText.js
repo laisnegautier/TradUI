@@ -21,30 +21,33 @@ export default class TranslatedText extends Component {
 
   listenToTranslatedText = () => {
     this.state.translatedText !== ""
-      ? Speech.speak(this.state.translatedText, {
-        language: this.props.chosenTranslationLanguage
-      })
-      : alert(
-        "Veuillez insérer du texte avant d'utiliser cette fonctionnalité."
-      );
+      ? Speech.speak(this.state.translatedText, { language: this.props.chosenTranslationLanguage })
+      : (this.state.isTranslating)
+        ? alert("Veuillez patienter, le texte a besoin d'être traduit.")
+        : alert("Veuillez insérer du texte avant d'utiliser cette fonctionnalité.");
   };
 
   translate = () => {
-    if (this.props.insertedText !== "") {
-      this.setState({ isTranslating: true });
-      getTraduction(
-        this.props.insertedText,
-        this.props.chosenInitialLanguage,
-        this.props.chosenTranslationLanguage
-      )
-        .then(responseJson => {
-          this.setState({
-            translatedText: responseJson.translations[0].translation,
-            isTranslating: false
-          });
-        })
-        .catch(error => { });
-    }
+    this.setState({ translatedText: "", isTranslating: true });
+
+    getTraduction(
+      this.props.insertedText,
+      this.props.chosenInitialLanguage,
+      this.props.chosenTranslationLanguage
+    )
+      .then(responseJson => {
+        console.log(responseJson);
+        this.setState({
+          translatedText: responseJson.translations[0].translation,
+          isTranslating: false
+        });
+      })
+      .catch(error => {
+        this.setState({
+          translatedText: "[Pas de traduction]",
+          isTranslating: false
+        });
+      });
   };
 
   // ERRORS
@@ -52,43 +55,22 @@ export default class TranslatedText extends Component {
     alert("Hum hum cela ne sert à rien de traduire dans une même langue...");
   }
 
-  componentDidMount() {
-    if (this.props.chosenInitialLanguage === this.props.chosenTranslationLanguage) {
-      this.checkUsefulness();
-    }
+  componentDidMount = () => {
   }
 
-  componentDidUpdate(prevProps) {
-    if (
-      prevProps.insertedText !== this.props.insertedText &&
-      this.props.insertedText !== "" &&
-      this.props.insertedText !== " "
-    ) {
-      this.translate();
-    }
-    if (
-      (prevProps.insertedText !== this.props.insertedText &&
-        this.props.insertedText === "") ||
-      (prevProps.insertedText !== this.props.insertedText &&
-        this.props.insertedText === " ")
-    ) {
-      this.setState({ translatedText: "", isTranslating: false });
+  componentDidUpdate = (prevProps) => {
+    if (this.props.insertedText !== "") {
+      if (prevProps.insertedText !== this.props.insertedText
+        || prevProps.chosenInitialLanguage !== this.props.chosenInitialLanguage
+        || prevProps.chosenTranslationLanguage !== this.props.chosenTranslationLanguage) {
+        this.translate();
+      }
     }
 
-    // if (this.props.insertedText !== "" && this.props.insertedText !== " ") {
-
-    //   if (prevProps.insertedText !== this.props.insertedText) {
-
-    //     if (this.props.chosenInitialLanguage === this.props.chosenTranslationLanguage) {
-    //       this.checkUsefulness();
-    //     }
-    //     else {
-    //       this.translate();
-    //     }
-    //   }
-    // }
-
-
+    // If the text is empty after modification then we stop all
+    if (prevProps.insertedText !== this.props.insertedText && this.props.insertedText === "") {
+      this.setState({ translatedText: [], isTranslating: false });
+    }
   }
 
   render() {
@@ -103,7 +85,7 @@ export default class TranslatedText extends Component {
         <Text style={styles.textToTranslateInput}>
           {this.state.isTranslating ? (
             <ActivityIndicator style={{ width: 170, height: 50 }} />
-          ) : (this.props.insertedText !== "" && this.props.insertedText !== " ") ? (
+          ) : (this.props.insertedText !== "") ? (
             this.state.translatedText
           ) : ("En attente de texte...")}
         </Text>
@@ -125,7 +107,8 @@ const styles = StyleSheet.create({
     borderColor: "#f1f1f1",
     borderRadius: 5,
     backgroundColor: "#fff",
-    elevation: 4
+    elevation: 4,
+    marginBottom: 20
   },
   ioniconsMegaphone1: {
     backgroundColor: "#fafafa",

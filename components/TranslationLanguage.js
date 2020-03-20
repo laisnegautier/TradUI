@@ -5,7 +5,6 @@ import {
     View,
     Picker
 } from "react-native";
-import paysLangues from "./../data/iso_639-2.json";
 
 export default class DetectedLanguages extends Component {
     constructor(props) {
@@ -29,6 +28,12 @@ export default class DetectedLanguages extends Component {
                         <Picker.Item label="Anglais" value="en" />
                         <Picker.Item label="Francais" value="fr" />
                         <Picker.Item label="Espagnol" value="es" />
+                        <Picker.Item label="Italien" value="it" />
+                        <Picker.Item label="Arabe" value="ar" />
+                        <Picker.Item label="Allemand" value="de" />
+                        <Picker.Item label="Polonais" value="pl" />
+                        <Picker.Item label="Chinois" value="zh" />
+                        <Picker.Item label="Japonais" value="ja" />
                     </Picker>
                 </View>
             </View>

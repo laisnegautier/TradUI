@@ -1,9 +1,10 @@
 import React, { Component } from "react";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, ScrollView, View, Text } from "react-native";
 import TextToTranslate from "./TextToTranslate";
 import DetectedLanguages from "./DetectedLanguages";
 import TranslationLanguage from "./TranslationLanguage";
 import TranslatedText from "./TranslatedText";
+import GraphLanguages from "./GraphLanguages";
 
 export default class LearnTranslateScreen extends Component {
   static navigationOptions = { title: "Traduction" };
@@ -15,9 +16,14 @@ export default class LearnTranslateScreen extends Component {
       chosenInitialLanguage: "",
       detectedLanguages: [],
       chosenTranslationLanguage: "fr",
-      translation: ""
+      translation: "",
+
+      isLoading: false,
+      isLoadingLangueDetection: false,
+      isLoadingTraduction: false
     };
   }
+
 
   // HANDLER CALLBACKS
   handleInsertedTextChange = newInsertedText =>
@@ -29,14 +35,6 @@ export default class LearnTranslateScreen extends Component {
   handleChosenTranslationLanguageChange = newChosenTranslationLanguage =>
     this.setState({ chosenTranslationLanguage: newChosenTranslationLanguage });
 
-  // METHODS
-  componentDidMount = () => {
-    this.setState({
-      isLoading: false,
-      isLoadingLangueDetection: false,
-      isLoadingTraduction: false
-    });
-  };
 
   render() {
     // VARIABLES
@@ -45,45 +43,52 @@ export default class LearnTranslateScreen extends Component {
     var detectedLanguages = this.state.detectedLanguages;
     var chosenTranslationLanguage = this.state.chosenTranslationLanguage;
 
+
     // FINAL DISPLAY
     return (
-      <View style={styles.container}>
-        <TextToTranslate
-          handleInsertedTextChange={this.handleInsertedTextChange}
-          chosenInitialLanguage={chosenInitialLanguage}
-        />
-        <DetectedLanguages
-          insertedText={insertedText}
-          handleDetectedLanguagesChange={this.handleDetectedLanguagesChange}
-          detectedLanguages={detectedLanguages}
-          chosenInitialLanguage={chosenInitialLanguage}
-          handleChosenInitialLanguageChange={
-            this.handleChosenInitialLanguageChange
-          }
-        />
-        <TranslationLanguage
-          chosenInitialLanguage={chosenInitialLanguage}
-          chosenTranslationLanguage={chosenTranslationLanguage}
-          handleChosenTranslationLanguageChange={
-            this.handleChosenTranslationLanguageChange
-          }
-        />
-        <TranslatedText
-          detectedLanguages={detectedLanguages}
-          insertedText={insertedText}
-          chosenInitialLanguage={chosenInitialLanguage}
-          chosenTranslationLanguage={chosenTranslationLanguage}
-        />
+      <View style={styles.bigContainer}>
+        <ScrollView>
+
+          <View style={styles.container}>
+            <TextToTranslate
+              handleInsertedTextChange={this.handleInsertedTextChange}
+              chosenInitialLanguage={chosenInitialLanguage}
+            />
+            <DetectedLanguages
+              insertedText={insertedText}
+              handleDetectedLanguagesChange={this.handleDetectedLanguagesChange}
+              detectedLanguages={detectedLanguages}
+              chosenInitialLanguage={chosenInitialLanguage}
+              handleChosenInitialLanguageChange={this.handleChosenInitialLanguageChange}
+            />
+            <TranslationLanguage
+              chosenInitialLanguage={chosenInitialLanguage}
+              chosenTranslationLanguage={chosenTranslationLanguage}
+              handleChosenTranslationLanguageChange={this.handleChosenTranslationLanguageChange}
+            />
+            <TranslatedText
+              insertedText={insertedText}
+              chosenInitialLanguage={chosenInitialLanguage}
+              chosenTranslationLanguage={chosenTranslationLanguage}
+            />
+
+            {detectedLanguages.length > 0 ? <GraphLanguages detectedLanguages={detectedLanguages} /> : null}
+          </View>
+        </ScrollView>
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
+  bigContainer: {
     height: "100%",
+    backgroundColor: "#fff"
+  },
+  container: {
     display: "flex",
     backgroundColor: "#fff",
-    alignItems: "center"
+    alignItems: "center",
+    paddingBottom: 20
   }
 });
