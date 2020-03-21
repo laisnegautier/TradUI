@@ -46,7 +46,7 @@ export default class PlayFindlanguageScreen extends Component {
     )
       .then(response => response.json())
       .then(responseJson => {
-        console.log(responseJson);
+        //console.log(responseJson);
         // Showing response message coming from server after inserting records.
         alert(responseJson);
         this.setState({ isLoading: false, disabled: false });
@@ -60,36 +60,40 @@ export default class PlayFindlanguageScreen extends Component {
   componentDidMount = () => {
     //this.setState({ questionsData: this.props.navigation.getParams('questionsData') });
     //console.log(this.state.questionsData);
-  }
+  };
 
   render() {
-    /*const mot = "yo";
-    const questions = this.props;
+    let word = "";
+    let language = "";
+    let translation = "";
+
+    const questions = this.props.navigation.getParam("questionsData", "Error");
     for (const e of questions) {
-      if (e.quest_order == compteur) {
-        mot = e.quest_word;
+      const value = JSON.parse(e.quest_order);
+      //const order = parseInt(questions.get("quest_order"));
+      //console.log(order);
+      if (value == Number(this.state.count)) {
+        word = JSON.stringify(e.quest_word);
+        language = JSON.stringify(e.quest_language);
+        translation = JSON.stringify(e.quest_frenchTranslation);
       }
     }
-    console.log(mot);*/
-
-    //const { navigation } = this.props;
     return (
       <View>
-        <Text>Quelle est la langue du mot ?</Text>
+        <Text>Quelle est la langue du mot {word}?</Text>
         <TextInput
-          placeholder="Enter Resultat"
+          placeholder="Entrer Resultat"
           onChangeText={text => this.setState({ answer: text })}
           style={styles.TextInputStyleClass}
         />
-        <Text>Test : {JSON.stringify(this.props.navigation.getParam("questionsData", "Error"))}</Text>
         <TouchableOpacity
           style={styles.container}
-        //onPress={() => this.checkAnswer()}
+          //onPress={() => this.checkAnswer()}
         >
           <Text>Confirmer</Text>
         </TouchableOpacity>
-        <Text>Langue : </Text>
-        <Text>Traduction :</Text>
+        <Text>Langue : {language}</Text>
+        <Text>Traduction {translation}:</Text>
 
         <TouchableOpacity
           style={styles.container}
