@@ -24,7 +24,6 @@ export default class LearnTranslateScreen extends Component {
     };
   }
 
-
   // HANDLER CALLBACKS
   handleInsertedTextChange = newInsertedText =>
     this.setState({ insertedText: newInsertedText });
@@ -35,7 +34,6 @@ export default class LearnTranslateScreen extends Component {
   handleChosenTranslationLanguageChange = newChosenTranslationLanguage =>
     this.setState({ chosenTranslationLanguage: newChosenTranslationLanguage });
 
-
   render() {
     // VARIABLES
     var insertedText = this.state.insertedText;
@@ -43,12 +41,10 @@ export default class LearnTranslateScreen extends Component {
     var detectedLanguages = this.state.detectedLanguages;
     var chosenTranslationLanguage = this.state.chosenTranslationLanguage;
 
-
     // FINAL DISPLAY
     return (
       <View style={styles.bigContainer}>
         <ScrollView>
-
           <View style={styles.container}>
             <TextToTranslate
               handleInsertedTextChange={this.handleInsertedTextChange}
@@ -59,12 +55,16 @@ export default class LearnTranslateScreen extends Component {
               handleDetectedLanguagesChange={this.handleDetectedLanguagesChange}
               detectedLanguages={detectedLanguages}
               chosenInitialLanguage={chosenInitialLanguage}
-              handleChosenInitialLanguageChange={this.handleChosenInitialLanguageChange}
+              handleChosenInitialLanguageChange={
+                this.handleChosenInitialLanguageChange
+              }
             />
             <TranslationLanguage
               chosenInitialLanguage={chosenInitialLanguage}
               chosenTranslationLanguage={chosenTranslationLanguage}
-              handleChosenTranslationLanguageChange={this.handleChosenTranslationLanguageChange}
+              handleChosenTranslationLanguageChange={
+                this.handleChosenTranslationLanguageChange
+              }
             />
             <TranslatedText
               insertedText={insertedText}
@@ -72,7 +72,9 @@ export default class LearnTranslateScreen extends Component {
               chosenTranslationLanguage={chosenTranslationLanguage}
             />
 
-            {detectedLanguages.length > 0 ? <GraphLanguages detectedLanguages={detectedLanguages} /> : null}
+            {detectedLanguages.length > 0 ? (
+              <GraphLanguages detectedLanguages={detectedLanguages} />
+            ) : null}
           </View>
         </ScrollView>
       </View>

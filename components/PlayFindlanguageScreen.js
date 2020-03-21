@@ -8,6 +8,8 @@ import {
   Alert,
   ActivityIndicator
 } from "react-native";
+import { getDetectionLangue } from "./../helpers/langageTranslatorApi";
+import { getTraduction } from "./../helpers/langageTranslatorApi";
 
 export default class PlayFindlanguageScreen extends Component {
   static navigationOptions = { title: "Questions" };
@@ -23,23 +25,54 @@ export default class PlayFindlanguageScreen extends Component {
       word: "",
       language: "",
       translation: "",
-      points: 0
+      points: 0,
+      detectedLanguageIBM: "",
+      translationIBM: ""
     };
   }
+
+  detectLanguageIBM = texte => {
+    getDetectionLangue(texte)
+      .then(jsonResponse => {
+        console.log(jsonResponse.languages[0].language);
+        this.setState({
+          detectedLanguageIBM: jsonResponse.languages[0].langage
+        });
+      })
+      .catch(error => {
+        this.setState({
+          detectLanguageIBM: "[Pas trouvé]"
+        });
+      });
+  };
+
+  translateIBM = word => {
+    getTraduction(word, this.state.detectedLanguage, "fr")
+      .then(responseJson => {
+        this.setState({
+          translationIBM: responseJson.translations[0].translation
+        });
+      })
+      .catch(error => {
+        this.setState({
+          translationIBM: "[Pas trouvé]"
+        });
+      });
+  };
 
   checkLanguage = (language, translation, questionCount) => {
     /*console.log(this.state.answerLanguage);
     console.log(language);*/
-    if (this.state.answerLanguage.equals(language)) {
+    /*if (this.state.answerLanguage.equals(language)) {
       console.log("great!");
       this.setState({ points: this.state.points + 1 });
       this.followingQuestion(questionCount);
-    }
+    }*/
   };
 
   followingQuestion = questionCount => {
-    console.log(this.state.count);
-    if (this.state.count < 2) {
+    //tant que c'est inférieur au nb total de q°, on passe à la question suivante
+    if (this.state.count <= questionCount) {
       this.setState({
         count: this.state.count + 1
       });
@@ -47,6 +80,7 @@ export default class PlayFindlanguageScreen extends Component {
       alert(`Terminé, vous avez ${this.state.points} points`);
     }
   };
+
   create = questionId => {
     this.setState({ isLoading: true, disabled: true });
 
@@ -115,14 +149,18 @@ export default class PlayFindlanguageScreen extends Component {
         />
         <TouchableOpacity
           style={styles.container}
-          onPress={() =>
-            this.checkLanguage(language, translation, questionCount)
-          }
+          onPress={() => {
+            this.checkLanguage(language, translation, questionCount);
+            this.detectLanguageIBM(word);
+            this.translateIBM(word);
+          }}
         >
           <Text>Confirmer</Text>
         </TouchableOpacity>
         <Text>Langue : {language}</Text>
         <Text>Traduction {translation}:</Text>
+        <Text>Langue trouvée par IBM: {this.state.detectedLanguageIBM}</Text>
+        <Text>Traduction de IBM {this.state.translationIBM}:</Text>
 
         <TouchableOpacity
           style={styles.container}
