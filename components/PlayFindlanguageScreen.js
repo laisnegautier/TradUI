@@ -19,16 +19,35 @@ export default class PlayFindlanguageScreen extends Component {
       disabled: false,
       questionsData: [],
       count: 1, // pour gérer l'ordre des questions
-      answer: ""
+      answerLanguage: "",
+      word: "",
+      language: "",
+      translation: "",
+      points: 0
     };
   }
 
-  checkLanguage = () => {
-    //vérifie que c'est la bonne réponse. Si oui, passe à la suivant sinon, réessaye.
-    // +1 pt pr le joueur
+  checkLanguage = (language, translation, questionCount) => {
+    /*console.log(this.state.answerLanguage);
+    console.log(language);*/
+    if (this.state.answerLanguage.equals(language)) {
+      console.log("great!");
+      this.setState({ points: this.state.points + 1 });
+      this.followingQuestion(questionCount);
+    }
   };
 
-  create = () => {
+  followingQuestion = questionCount => {
+    console.log(this.state.count);
+    if (this.state.count < 2) {
+      this.setState({
+        count: this.state.count + 1
+      });
+    } else {
+      alert(`Terminé, vous avez ${this.state.points} points`);
+    }
+  };
+  create = questionId => {
     this.setState({ isLoading: true, disabled: true });
 
     fetch(
@@ -40,7 +59,8 @@ export default class PlayFindlanguageScreen extends Component {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          answer: this.state.answer
+          language: this.state.answerLanguage,
+          questionId: questionId
         })
       }
     )
@@ -63,19 +83,26 @@ export default class PlayFindlanguageScreen extends Component {
   };
 
   render() {
+    let translation = "";
     let word = "";
     let language = "";
-    let translation = "";
-
+    let questionId = "";
+    let questionCount = 0;
     const questions = this.props.navigation.getParam("questionsData", "Error");
     for (const e of questions) {
+      questionCount++;
       const value = JSON.parse(e.quest_order);
-      //const order = parseInt(questions.get("quest_order"));
-      //console.log(order);
+
       if (value == Number(this.state.count)) {
         word = JSON.stringify(e.quest_word);
         language = JSON.stringify(e.quest_language);
         translation = JSON.stringify(e.quest_frenchTranslation);
+        questionId = JSON.parse(e.quest_id);
+        /*this.setState({
+          word: JSON.stringify(e.quest_word),
+          language: JSON.stringify(e.quest_language),
+          translation: JSON.stringify(e.quest_frenchTranslation)
+        });*/
       }
     }
     return (
@@ -83,12 +110,14 @@ export default class PlayFindlanguageScreen extends Component {
         <Text>Quelle est la langue du mot {word}?</Text>
         <TextInput
           placeholder="Entrer Resultat"
-          onChangeText={text => this.setState({ answer: text })}
+          onChange={text => this.setState({ answerLanguage: text })}
           style={styles.TextInputStyleClass}
         />
         <TouchableOpacity
           style={styles.container}
-          //onPress={() => this.checkAnswer()}
+          onPress={() =>
+            this.checkLanguage(language, translation, questionCount)
+          }
         >
           <Text>Confirmer</Text>
         </TouchableOpacity>
@@ -97,15 +126,14 @@ export default class PlayFindlanguageScreen extends Component {
 
         <TouchableOpacity
           style={styles.container}
-          onPress={() => this.create()} // ajoute une réponse
+          onPress={() => this.create(questionId)} // ajoute une réponse
         >
           <Text>J'avais raison</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.container}
           onPress={() => {
-            count++;
-            his.navigation.navigate("PlayFindlanguage");
+            this.followingQuestion(questionCount);
           }} // passe à la question suivante
         >
           <Text>Passer cette question</Text>
