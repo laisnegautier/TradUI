@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { getDetectionLangue } from "./../helpers/langageTranslatorApi";
 import { getTraduction } from "./../helpers/langageTranslatorApi";
+import paysLangues from "./../data/iso_639-2.json";
 
 export default class PlayFindlanguageScreen extends Component {
   static navigationOptions = { title: "Questions" };
@@ -31,12 +32,12 @@ export default class PlayFindlanguageScreen extends Component {
     };
   }
 
+  //quasi duplication de code
   detectLanguageIBM = texte => {
     getDetectionLangue(texte)
       .then(jsonResponse => {
-        console.log(jsonResponse.languages[0].language);
         this.setState({
-          detectedLanguageIBM: jsonResponse.languages[0].langage
+          detectedLanguageIBM: jsonResponse.languages[0].language
         });
       })
       .catch(error => {
@@ -46,6 +47,22 @@ export default class PlayFindlanguageScreen extends Component {
       });
   };
 
+  //Duplication de code
+  paysCorrespondant = codeIso => {
+    var getLanguesParIsoCode = code =>
+      paysLangues.filter(
+        x => x.Alpha2_Code === code && x.French_Name !== null
+      )[0];
+    var langueTrouvee = getLanguesParIsoCode(codeIso);
+
+    // on met en majuscule la premiere lettre
+    return langueTrouvee !== undefined
+      ? langueTrouvee.French_Name.charAt(0).toUpperCase() +
+          langueTrouvee.French_Name.slice(1)
+      : codeIso;
+  };
+
+  //quasi duplication de code
   translateIBM = word => {
     getTraduction(word, this.state.detectedLanguage, "fr")
       .then(responseJson => {
@@ -63,7 +80,7 @@ export default class PlayFindlanguageScreen extends Component {
   checkLanguage = (language, translation, questionCount) => {
     /*console.log(this.state.answerLanguage);
     console.log(language);*/
-    /*if (this.state.answerLanguage.equals(language)) {
+    /*if (this.state.answerLanguage.equals("language")) {
       console.log("great!");
       this.setState({ points: this.state.points + 1 });
       this.followingQuestion(questionCount);
@@ -159,8 +176,13 @@ export default class PlayFindlanguageScreen extends Component {
         </TouchableOpacity>
         <Text>Langue : {language}</Text>
         <Text>Traduction {translation}:</Text>
-        <Text>Langue trouvée par IBM: {this.state.detectedLanguageIBM}</Text>
-        <Text>Traduction de IBM {this.state.translationIBM}:</Text>
+        <Text>
+          Langue trouvée par IBM:{" "}
+          {JSON.stringify(
+            this.paysCorrespondant(this.state.detectedLanguageIBM)
+          )}
+        </Text>
+        <Text>Traduction de IBM : {this.state.translationIBM}</Text>
 
         <TouchableOpacity
           style={styles.container}
