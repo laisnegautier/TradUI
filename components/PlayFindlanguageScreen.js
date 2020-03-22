@@ -34,7 +34,7 @@ export default class PlayFindlanguageScreen extends Component {
 
   //quasi duplication de code
   detectLanguageIBM = texte => {
-    getDetectionLangue(texte)
+    getDetectionLangue("hello")
       .then(jsonResponse => {
         this.setState({
           detectedLanguageIBM: jsonResponse.languages[0].language
@@ -64,11 +64,13 @@ export default class PlayFindlanguageScreen extends Component {
 
   //quasi duplication de code
   translateIBM = word => {
-    getTraduction(word, this.state.detectedLanguage, "fr")
+    console.log(this.state.detectedLanguageIBM);
+    getTraduction(word, this.state.detectedLanguageIBM, "fr")
       .then(responseJson => {
         this.setState({
           translationIBM: responseJson.translations[0].translation
         });
+        console.log(responseJson.translations);
       })
       .catch(error => {
         this.setState({
