@@ -22,13 +22,16 @@ export default class PlayFindlanguageScreen extends Component {
       disabled: false,
       questionsData: [],
       count: 1, // pour gérer l'ordre des questions
-      answerLanguage: "",
       word: "",
       language: "",
       translation: "",
       points: 0,
       detectedLanguageIBM: "",
-      translationIBM: ""
+      translationIBM: "",
+      languageInput: "",
+      translationInput: "",
+      isLoading: false,
+      disabled: false
     };
   }
 
@@ -80,9 +83,9 @@ export default class PlayFindlanguageScreen extends Component {
   };
 
   checkLanguage = (language, translation, questionCount) => {
-    /*console.log(this.state.answerLanguage);
+    /*console.log(this.state.languageInput);
     console.log(language);*/
-    /*if (this.state.answerLanguage.equals("language")) {
+    /*if (this.state.languageInput.equals("language")) {
       console.log("great!");
       this.setState({ points: this.state.points + 1 });
       this.followingQuestion(questionCount);
@@ -100,11 +103,10 @@ export default class PlayFindlanguageScreen extends Component {
     }
   };
 
-  create = questionId => {
+  createLanguage = questionId => {
     this.setState({ isLoading: true, disabled: true });
-
     fetch(
-      "http://projet-dev-mobile-laisnejouault.000webhostapp.com/addAnswer.php",
+      "http://projet-dev-mobile-laisnejouault.000webhostapp.com/createLanguage.php",
       {
         method: "POST",
         headers: {
@@ -112,14 +114,43 @@ export default class PlayFindlanguageScreen extends Component {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          language: this.state.answerLanguage,
+          languageInput: this.state.languageInput,
           questionId: questionId
         })
       }
     )
       .then(response => response.json())
       .then(responseJson => {
-        //console.log(responseJson);
+        console.log(responseJson);
+        // Showing response message coming from server after inserting records.
+        alert(responseJson);
+        this.setState({ isLoading: false, disabled: false });
+      })
+      .catch(error => {
+        console.error(error);
+        this.setState({ isLoading: false, disabled: false });
+      });
+  };
+
+  createTranslation = questionId => {
+    this.setState({ isLoading: true, disabled: true });
+    fetch(
+      "http://projet-dev-mobile-laisnejouault.000webhostapp.com/createTranslation.php",
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          translationInput: this.state.translationInput,
+          questionId: questionId
+        })
+      }
+    )
+      .then(response => response.json())
+      .then(responseJson => {
+        console.log(responseJson);
         // Showing response message coming from server after inserting records.
         alert(responseJson);
         this.setState({ isLoading: false, disabled: false });
@@ -150,7 +181,8 @@ export default class PlayFindlanguageScreen extends Component {
         word = JSON.stringify(e.quest_word);
         language = JSON.stringify(e.quest_language);
         translation = JSON.stringify(e.quest_frenchTranslation);
-        questionId = JSON.parse(e.quest_id);
+        questionId = e.quest_id;
+        console.log(questionId);
         /*this.setState({
           word: JSON.stringify(e.quest_word),
           language: JSON.stringify(e.quest_language),
@@ -162,8 +194,13 @@ export default class PlayFindlanguageScreen extends Component {
       <View>
         <Text>Quelle est la langue du mot {word}?</Text>
         <TextInput
-          placeholder="Entrer Resultat"
-          onChange={text => this.setState({ answerLanguage: text })}
+          placeholder="Entrer Langue"
+          onChangeText={text => this.setState({ languageInput: text })}
+          style={styles.TextInputStyleClass}
+        />
+        <TextInput
+          placeholder="Entrer traduction"
+          onChangeText={text => this.setState({ translationInput: text })}
           style={styles.TextInputStyleClass}
         />
         <TouchableOpacity
@@ -176,22 +213,41 @@ export default class PlayFindlanguageScreen extends Component {
         >
           <Text>Confirmer</Text>
         </TouchableOpacity>
-        <Text>Langue : {language}</Text>
-        <Text>Traduction {translation}:</Text>
-        <Text>
-          Langue trouvée par IBM:{" "}
-          {JSON.stringify(
-            this.paysCorrespondant(this.state.detectedLanguageIBM)
-          )}
-        </Text>
-        <Text>Traduction de IBM : {this.state.translationIBM}</Text>
 
         <TouchableOpacity
-          style={styles.container}
-          onPress={() => this.create(questionId)} // ajoute une réponse
+          disabled={this.state.disabled}
+          onPress={() => this.createLanguage(questionId)}
         >
-          <Text>J'avais raison</Text>
+          <View>
+            <Text>J'avais raison pour la langue</Text>
+          </View>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          disabled={this.state.disabled}
+          onPress={() => this.createTranslation(questionId)}
+        >
+          <View>
+            <Text>J'avais raison pour la traduction</Text>
+          </View>
+        </TouchableOpacity>
+
+        <View>
+          <Text>Réponses</Text>
+          <Text>Langue : {language}</Text>
+          <Text>Traduction : {translation}</Text>
+        </View>
+
+        <View>
+          <Text>
+            Langue trouvée par IBM:{" "}
+            {JSON.stringify(
+              this.paysCorrespondant(this.state.detectedLanguageIBM)
+            )}
+          </Text>
+          <Text>Traduction de IBM : {this.state.translationIBM}</Text>
+        </View>
+
         <TouchableOpacity
           style={styles.container}
           onPress={() => {
@@ -200,6 +256,8 @@ export default class PlayFindlanguageScreen extends Component {
         >
           <Text>Passer cette question</Text>
         </TouchableOpacity>
+
+        {this.state.isLoading ? <ActivityIndicator size="large" /> : null}
       </View>
     );
   }

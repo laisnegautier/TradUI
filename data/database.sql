@@ -18,11 +18,18 @@ create table question (
     quest_order integer default null
 );
 
-create table answer (
-    answer_id integer not null primary key auto_increment,
-    answer_descr varchar
+create table answerLanguage (
+    answerL_id integer not null primary key auto_increment,
+    answerL_descr varchar
 (30) default null,
-    quest_id integer not null
+    quest_id integer default null
+);
+
+create table answerTranslation (
+    answerT_id integer not null primary key auto_increment,
+    answerT_descr varchar
+(30) default null,
+    quest_id integer default null
 );
 
 insert into question
