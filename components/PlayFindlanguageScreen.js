@@ -22,10 +22,8 @@ export default class PlayFindlanguageScreen extends Component {
       disabled: false,
       questionsData: [],
       count: 1, // pour gérer l'ordre des questions
-      word: "",
-      language: "",
-      translation: "",
       points: 0,
+      pointsIBM: 0,
       detectedLanguageIBM: "",
       translationIBM: "",
       languageInput: "",
@@ -82,14 +80,23 @@ export default class PlayFindlanguageScreen extends Component {
       });
   };
 
-  checkLanguage = (language, translation, questionCount) => {
-    /*console.log(this.state.languageInput);
-    console.log(language);*/
-    /*if (this.state.languageInput.equals("language")) {
-      console.log("great!");
+  checkAnswer = (answer, input, questionCount) => {
+    let inputLowerCase = input.toLowerCase();
+    if (answer == `"${inputLowerCase}"`) {
       this.setState({ points: this.state.points + 1 });
-      this.followingQuestion(questionCount);
-    }*/
+      alert("Bravo, vous avez maintenant " + this.state.points + " points !");
+    } else {
+      alert("Dommage, pas de point gagné !");
+    }
+    //affichage réponses
+  };
+
+  checkAnswerIBM = (answer, input, questionCount) => {
+    let inputLowerCase = input.toLowerCase();
+    if (answer == `"${inputLowerCase}"`) {
+      this.setState({ points: this.state.pointsIBM + 1 });
+    }
+    alert("IBM a maintenant " + this.state.pointsIBM + " points !");
   };
 
   followingQuestion = questionCount => {
@@ -150,7 +157,6 @@ export default class PlayFindlanguageScreen extends Component {
     )
       .then(response => response.json())
       .then(responseJson => {
-        console.log(responseJson);
         // Showing response message coming from server after inserting records.
         alert(responseJson);
         this.setState({ isLoading: false, disabled: false });
@@ -206,9 +212,18 @@ export default class PlayFindlanguageScreen extends Component {
         <TouchableOpacity
           style={styles.container}
           onPress={() => {
-            this.checkLanguage(language, translation, questionCount);
+            this.checkAnswer(this.state.languageInput, language, questionCount);
+            this.checkAnswer(
+              this.state.TranslationInput,
+              translation,
+              questionCount
+            );
+
+            //vérif IBM
             this.detectLanguageIBM(word);
             this.translateIBM(word);
+            this.checkAnswer(this.state.detectedLanguageIBM, language);
+            this.checkAnswer(this.state.translationIBM, translation);
           }}
         >
           <Text>Confirmer</Text>
