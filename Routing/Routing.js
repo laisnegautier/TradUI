@@ -2,9 +2,8 @@ import React, { Component } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import LearnTranslateScreen from "./../components/LearnTranslateScreen";
-import LearnWordcontextScreen from "./../components/LearnWordcontextScreen";
 import PlayBeginScreen from "./../components/PlayBeginScreen";
-import PlayFindlanguageScreen from "./../components/PlayFindlanguageScreen";
+import PlayFindLanguageScreen from "./../components/PlayFindLanguageScreen";
 import { createAppContainer } from "react-navigation";
 import { createStackNavigator } from "react-navigation-stack";
 import { createBottomTabNavigator } from "react-navigation-tabs";
@@ -35,9 +34,6 @@ const LearnStack = createStackNavigator(
   {
     LearnTranslate: {
       screen: LearnTranslateScreen
-    },
-    LearnWordContext: {
-      screen: LearnWordcontextScreen
     }
   },
   {
@@ -50,8 +46,8 @@ const PlayStack = createStackNavigator(
     PlayBegin: {
       screen: PlayBeginScreen
     },
-    PlayFindlanguage: {
-      screen: PlayFindlanguageScreen
+    PlayFindLanguage: {
+      screen: PlayFindLanguageScreen
     }
   },
   {

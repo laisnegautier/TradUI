@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, ScrollView, View, Text } from "react-native";
+import { StyleSheet, ScrollView, View } from "react-native";
 import TextToTranslate from "./TextToTranslate";
 import DetectedLanguages from "./DetectedLanguages";
 import TranslationLanguage from "./TranslationLanguage";
@@ -36,10 +36,10 @@ export default class LearnTranslateScreen extends Component {
 
   render() {
     // VARIABLES
-    var insertedText = this.state.insertedText;
-    var chosenInitialLanguage = this.state.chosenInitialLanguage;
-    var detectedLanguages = this.state.detectedLanguages;
-    var chosenTranslationLanguage = this.state.chosenTranslationLanguage;
+    let insertedText = this.state.insertedText;
+    let chosenInitialLanguage = this.state.chosenInitialLanguage;
+    let detectedLanguages = this.state.detectedLanguages;
+    let chosenTranslationLanguage = this.state.chosenTranslationLanguage;
 
     // FINAL DISPLAY
     return (
@@ -72,9 +72,7 @@ export default class LearnTranslateScreen extends Component {
               chosenTranslationLanguage={chosenTranslationLanguage}
             />
 
-            {detectedLanguages.length > 0 ? (
-              <GraphLanguages detectedLanguages={detectedLanguages} />
-            ) : null}
+            {detectedLanguages.length > 0 ? <GraphLanguages detectedLanguages={detectedLanguages} /> : null}
           </View>
         </ScrollView>
       </View>

@@ -7,7 +7,7 @@ import {
   ActivityIndicator
 } from "react-native";
 import { getDetectionLangue } from "./../helpers/langageTranslatorApi";
-import paysLangues from "./../data/iso_639-2.json";
+import Format from "./../utils/Format";
 
 export default class DetectedLanguages extends Component {
   constructor(props) {
@@ -40,20 +40,6 @@ export default class DetectedLanguages extends Component {
       .catch(error => {
         alert(error.message);
       });
-  };
-
-  paysCorrespondant = codeIso => {
-    var getLanguesParIsoCode = code =>
-      paysLangues.filter(
-        x => x.Alpha2_Code === code && x.French_Name !== null
-      )[0];
-    var langueTrouvee = getLanguesParIsoCode(codeIso);
-
-    // on met en majuscule la premiere lettre
-    return langueTrouvee !== undefined
-      ? langueTrouvee.French_Name.charAt(0).toUpperCase() +
-          langueTrouvee.French_Name.slice(1)
-      : codeIso;
   };
 
   pickerChange(value, index) {
@@ -101,38 +87,38 @@ export default class DetectedLanguages extends Component {
     var picker = "";
     this.props.insertedText === "" || this.state.detectedLanguages.length === 0
       ? (picker = (
-          <Picker
-            selectedValue={this.state.detectedLanguages[0]}
-            style={{ width: 170 }}
-            onValueChange={(itemValue, itemIndex) =>
-              this.pickerChange(itemIndex)
-            }
-          >
-            <Picker.Item label="En attente de texte" value="0" />
-          </Picker>
-        ))
+        <Picker
+          selectedValue={this.state.detectedLanguages[0]}
+          style={{ width: 170 }}
+          onValueChange={(itemValue, itemIndex) =>
+            this.pickerChange(itemIndex)
+          }
+        >
+          <Picker.Item label="En attente de texte" value="0" />
+        </Picker>
+      ))
       : (picker = (
-          <Picker
-            selectedValue={this.state.pickerValue}
-            style={{ width: 170 }}
-            onValueChange={(itemValue, itemIndex) => {
-              this.pickerChange(itemValue, itemIndex);
-            }}
-          >
-            {this.state.detectedLanguages.map(v => (
-              <Picker.Item
-                key={v.language}
-                label={
-                  this.paysCorrespondant(v.language) +
-                  "                      " +
-                  (v.confidence * 100).toFixed(1) +
-                  "%"
-                }
-                value={v.language}
-              />
-            ))}
-          </Picker>
-        ));
+        <Picker
+          selectedValue={this.state.pickerValue}
+          style={{ width: 170 }}
+          onValueChange={(itemValue, itemIndex) => {
+            this.pickerChange(itemValue, itemIndex);
+          }}
+        >
+          {this.state.detectedLanguages.map(v => (
+            <Picker.Item
+              key={v.language}
+              label={
+                Format.getPaysCorrespondant(v.language) +
+                "                      " +
+                (v.confidence * 100).toFixed(1) +
+                "%"
+              }
+              value={v.language}
+            />
+          ))}
+        </Picker>
+      ));
 
     // FINAL DISPLAY
     return (
@@ -142,8 +128,8 @@ export default class DetectedLanguages extends Component {
           {this.state.isDetectingLanguages ? (
             <ActivityIndicator style={{ width: 170, height: 50 }} />
           ) : (
-            picker
-          )}
+              picker
+            )}
         </View>
       </View>
     );

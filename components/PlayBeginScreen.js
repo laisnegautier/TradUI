@@ -33,7 +33,7 @@ export default class PlayBeginScreen extends Component {
         isLoading: false,
         disabledBtn: false
       });
-      this.props.navigation.navigate("PlayFindlanguage", { questionsData: this.state.questionsData });
+      this.props.navigation.navigate("PlayFindLanguage", { questionsData: this.state.questionsData });
     })
       .catch(error => {
         console.error(error);
@@ -74,7 +74,7 @@ export default class PlayBeginScreen extends Component {
           disabled={this.state.disabledBtn}
           onPress={() => {
             this.getQuestions(),
-              this.props.navigation.navigate("PlayFindlanguage", { questionsData: this.state.questionsData });
+              this.props.navigation.navigate("PlayFindLanguage", { questionsData: this.state.questionsData });
           }}>
           <View style={styles.ioniconsMegaphone1}>
             <Ionicons name="ios-add-circle-outline" size={25}></Ionicons>

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { StyleSheet, View, TextInput, TouchableOpacity } from "react-native";
+import Format from "./../utils/Format";
 import * as Speech from "expo-speech";
 
 export default class TextToTranslate extends Component {
@@ -9,16 +10,9 @@ export default class TextToTranslate extends Component {
     this.state = { insertedText: "", timeout: 0 };
   }
 
-  // We get rid of multiple white spaces in the sentence and at both ends of the string
-  // The formatted text is either empty or with well formatted string (a single space is not possible for example)
-  formattedText = t => {
-    if (t !== "" && t !== " ") t = t.replace(/\s+/g, ' ').trim();
-    return t;
-  }
-
   // CALLBACKS
   _onInsertedTextChange = newInsertedText => {
-    var formattedText = this.formattedText(newInsertedText);
+    var formattedText = Format.getFormattedText(newInsertedText);
 
     // if there's text, we are sending it 1/2 second after the end of typing
     if (formattedText !== "" && formattedText !== " ") {

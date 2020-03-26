@@ -8,9 +8,12 @@ import {
   Alert,
   ActivityIndicator
 } from "react-native";
-import { getDetectionLangue } from "./../helpers/langageTranslatorApi";
-import { getTraduction } from "./../helpers/langageTranslatorApi";
+import { getDetectionLangue } from "../helpers/langageTranslatorApi";
+import { getTraduction } from "../helpers/langageTranslatorApi";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import Format from "./../utils/Format";
 import paysLangues from "./../data/iso_639-2.json";
+import IBMAnswers from "./IBMAnswers";
 
 export default class PlayFindlanguageScreen extends Component {
   static navigationOptions = { title: "Questions" };
@@ -20,33 +23,21 @@ export default class PlayFindlanguageScreen extends Component {
     this.state = {
       isLoading: false,
       disabled: false,
-      questionsData: [],
-      count: 1, // pour gérer l'ordre des questions
+
+      count: 0, // pour gérer l'ordre des questions
       points: 0,
+
       pointsIBM: 0,
-      detectedLanguageIBM: "",
-      translationIBM: "",
+
       languageInput: "",
       translationInput: "",
+
       isLoading: false,
-      disabled: false
+      disabled: false,
+
+      timer: 30
     };
   }
-
-  //quasi duplication de code
-  detectLanguageIBM = texte => {
-    getDetectionLangue("hello")
-      .then(jsonResponse => {
-        this.setState({
-          detectedLanguageIBM: jsonResponse.languages[0].language
-        });
-      })
-      .catch(error => {
-        this.setState({
-          detectLanguageIBM: "[Pas trouvé]"
-        });
-      });
-  };
 
   //Duplication de code
   paysCorrespondant = codeIso => {
@@ -59,7 +50,7 @@ export default class PlayFindlanguageScreen extends Component {
     // on met en majuscule la premiere lettre
     return langueTrouvee !== undefined
       ? langueTrouvee.French_Name.charAt(0).toUpperCase() +
-          langueTrouvee.French_Name.slice(1)
+      langueTrouvee.French_Name.slice(1)
       : codeIso;
   };
 
@@ -78,25 +69,6 @@ export default class PlayFindlanguageScreen extends Component {
           translationIBM: "[Pas trouvé]"
         });
       });
-  };
-
-  checkAnswer = (answer, input, questionCount) => {
-    let inputLowerCase = input.toLowerCase();
-    if (answer == `"${inputLowerCase}"`) {
-      this.setState({ points: this.state.points + 1 });
-      alert("Bravo, vous avez maintenant " + this.state.points + " points !");
-    } else {
-      alert("Dommage, pas de point gagné !");
-    }
-    //affichage réponses
-  };
-
-  checkAnswerIBM = (answer, input, questionCount) => {
-    let inputLowerCase = input.toLowerCase();
-    if (answer == `"${inputLowerCase}"`) {
-      this.setState({ points: this.state.pointsIBM + 1 });
-    }
-    alert("IBM a maintenant " + this.state.pointsIBM + " points !");
   };
 
   followingQuestion = questionCount => {
@@ -167,69 +139,93 @@ export default class PlayFindlanguageScreen extends Component {
       });
   };
 
-  componentDidMount = () => {
-    //this.setState({ questionsData: this.props.navigation.getParams('questionsData') });
-    //console.log(this.state.questionsData);
-  };
+  startTimer = () => {
+    if (this.state.timer > 0) {
+      let timerInterval = setInterval(() => {
+        this.setState({
+          timer: this.state.timer - 1
+        });
+      }, 1000);
+    }
+    else { console.log("fin"); }
+  }
+
+  // HANDLER CALLBACKS
+  handleIBMAnswers = (language, translation) =>
+    this.setState({ detectedLanguageIBM: language, translationIBM: translation });
 
   render() {
-    let translation = "";
-    let word = "";
-    let language = "";
-    let questionId = "";
-    let questionCount = 0;
     const questions = this.props.navigation.getParam("questionsData", "Error");
-    for (const e of questions) {
-      questionCount++;
-      const value = JSON.parse(e.quest_order);
 
-      if (value == Number(this.state.count)) {
-        word = JSON.stringify(e.quest_word);
-        language = JSON.stringify(e.quest_language);
-        translation = JSON.stringify(e.quest_frenchTranslation);
-        questionId = e.quest_id;
-        console.log(questionId);
-        /*this.setState({
-          word: JSON.stringify(e.quest_word),
-          language: JSON.stringify(e.quest_language),
-          translation: JSON.stringify(e.quest_frenchTranslation)
-        });*/
+    let word = questions[this.state.count].quest_word;
+    let language = questions[this.state.count].quest_language;
+    let translation = questions[this.state.count].quest_frenchTranslation;
+
+    let questionCount = 1;
+
+    let questionsBtn = questions.map(question => {
+      if (question.quest_id == questionCount) {
+        return <View key={question.quest_id} style={styles.enCours}><Text style={styles.textBtnSelected}>{question.quest_id}</Text></View>;
       }
-    }
+      else {
+        return <View key={question.quest_id} style={styles.aFaire}><Text style={styles.textBtn}>{question.quest_id}</Text></View>;
+      }
+    });
+
     return (
-      <View>
-        <Text>Quelle est la langue du mot {word}?</Text>
-        <TextInput
-          placeholder="Entrer Langue"
-          onChangeText={text => this.setState({ languageInput: text })}
-          style={styles.TextInputStyleClass}
-        />
-        <TextInput
-          placeholder="Entrer traduction"
-          onChangeText={text => this.setState({ translationInput: text })}
-          style={styles.TextInputStyleClass}
-        />
-        <TouchableOpacity
-          style={styles.container}
-          onPress={() => {
-            this.checkAnswer(this.state.languageInput, language, questionCount);
-            this.checkAnswer(
-              this.state.TranslationInput,
-              translation,
-              questionCount
-            );
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <View style={styles.questionsState}>
+            {questionsBtn}
+          </View>
 
-            //vérif IBM
-            this.detectLanguageIBM(word);
-            this.translateIBM(word);
-            this.checkAnswer(this.state.detectedLanguageIBM, language);
-            this.checkAnswer(this.state.translationIBM, translation);
-          }}
-        >
-          <Text>Confirmer</Text>
-        </TouchableOpacity>
+          <Text style={styles.timer}>{this.state.timer}s</Text>
+        </View>
 
-        <TouchableOpacity
+        <View style={{ width: "100%", display: "flex", alignItems: "center" }}>
+          <View style={styles.title}>
+            <Ionicons name="ios-help-circle-outline" size={50}></Ionicons>
+            <Text style={styles.catchphrase}>Quelle est la langue et la traduction de </Text>
+            <Text style={styles.word}>{word}</Text>
+          </View>
+
+          <View>
+            <Text style={styles.flag}>Langue supposée</Text>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.textInput}
+                placeholder="Votre réponse"
+                onChangeText={insertedText => this.setState({ languageInput: Format.getFormattedText(insertedText) })}
+              />
+            </View>
+          </View>
+
+          <View>
+            <Text style={styles.flag}>Traduction en français</Text>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.textInput}
+                placeholder="Votre réponse"
+                onChangeText={insertedText => this.setState({ translationInput: Format.getFormattedText(insertedText) })}
+              />
+            </View>
+          </View>
+
+          <Text>{this.state.detectedLanguageIBM} et {this.state.translationIBM}</Text>
+          <View style={{ display: "flex", flexDirection: "row" }}>
+            <IBMAnswers
+              word={word}
+              handleIBMAnswers={this.handleIBMAnswers} />
+          </View>
+
+          <View style={styles.checkAnswer}>
+            <Ionicons name="ios-checkmark-circle-outline" color="green" size={50}></Ionicons>
+            <Text>Verifier</Text>
+          </View>
+        </View>
+
+
+        {/* <TouchableOpacity
           disabled={this.state.disabled}
           onPress={() => this.createLanguage(questionId)}
         >
@@ -270,9 +266,7 @@ export default class PlayFindlanguageScreen extends Component {
           }} // passe à la question suivante
         >
           <Text>Passer cette question</Text>
-        </TouchableOpacity>
-
-        {this.state.isLoading ? <ActivityIndicator size="large" /> : null}
+        </TouchableOpacity> */}
       </View>
     );
   }
@@ -280,7 +274,71 @@ export default class PlayFindlanguageScreen extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "lightgray"
+    height: "100%",
+    display: "flex",
+    backgroundColor: "#fff",
+    alignItems: "center"
+  },
+  questionDetails: {
+    backgroundColor: "tomato",
+    display: "flex",
+    justifyContent: "center",
+    color: "white",
+    paddingVertical: 7,
+    paddingHorizontal: 15,
+    borderBottomLeftRadius: 5,
+    borderBottomRightRadius: 5
+  },
+  inputContainer: {
+    width: "90%",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+    borderWidth: 0,
+    borderColor: "#f1f1f1",
+    borderRadius: 5,
+    marginTop: 20,
+    backgroundColor: "white",
+    elevation: 4
+  },
+  separator: {
+    width: "60%",
+    borderBottomColor: "black",
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    marginBottom: 20
+  },
+  title: {
+    display: "flex",
+    alignItems: "center",
+    marginTop: 20,
+    marginBottom: 20
+  },
+  catchphrase: {
+    fontSize: 18,
+    textAlign: "center"
+  },
+  inputContainer: {
+    width: "90%",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+    borderWidth: 0,
+    borderColor: "#f1f1f1",
+    borderRadius: 5,
+    marginBottom: 20,
+    backgroundColor: "#fff",
+    elevation: 4
+  },
+  textInput: {
+    width: "100%",
+    backgroundColor: "white",
+    fontSize: 18
   },
   MainContainer: {
     justifyContent: "center",
@@ -289,20 +347,83 @@ const styles = StyleSheet.create({
     margin: 10,
     padding: 20
   },
-
-  TextInputStyleClass: {
-    textAlign: "center",
-    marginBottom: 7,
-    height: 40,
-    borderWidth: 1,
-    borderColor: "#2196F3",
-    borderRadius: 5
+  word: {
+    fontSize: 30,
+    marginTop: 10,
+    fontStyle: "italic",
+    fontFamily: "serif"
   },
-
-  title: {
-    fontSize: 22,
-    color: "#009688",
+  flag: {
+    width: "60%",
+    paddingVertical: 5,
+    paddingHorizontal: 7,
+    backgroundColor: "white",
+    elevation: 3,
+    fontSize: 12,
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5,
+    color: "#000",
+    marginLeft: 10
+  },
+  checkAnswer: {
+    borderRadius: 5,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 4,
+    backgroundColor: "#fff",
+    width: 100,
+    height: 100
+  },
+  questionsState: {
+    elevation: 3,
+    backgroundColor: "#fff",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    color: "white",
+    paddingVertical: 7,
+    paddingHorizontal: 5,
+    borderBottomLeftRadius: 5,
+    borderBottomRightRadius: 5
+  },
+  enCours: {
+    backgroundColor: "orange",
+    padding: 5,
+    marginHorizontal: 2,
+    width: 30,
+    height: 30,
+    borderRadius: 50
+  },
+  aFaire: {
+    backgroundColor: "#fafafa",
+    padding: 5,
+    marginHorizontal: 2,
+    width: 30,
+    height: 30,
+    borderRadius: 50
+  },
+  textBtn: {
+    textAlign: "center"
+  },
+  textBtnSelected: {
     textAlign: "center",
-    marginBottom: 15
+    color: "#fff"
+  },
+  timer: {
+    elevation: 3,
+    paddingHorizontal: 10,
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+    textAlignVertical: "center",
+    backgroundColor: "#fff",
+    borderBottomLeftRadius: 5
+  },
+  header: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between"
   }
 });
