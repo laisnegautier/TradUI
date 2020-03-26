@@ -42,23 +42,16 @@ export default class IBMAnswers extends Component {
             });
     };
 
-    translate = () => {
+    translate = (language) => {
         this.setState({ translatedText: "", isTranslating: true });
-        console.log("df");
-        console.log(this.state.detectedLanguage);
-        getTraduction(
-            this.props.word,
-            this.state.detectedLanguage,
-            "fr"
-        )
+
+        getTraduction(this.props.word, language, "fr")
             .then(responseJson => {
                 this.setState({
                     translatedText: responseJson.translations[0].translation,
                     isTranslating: false
                 });
-                this._callback(
-                    Format.getPaysCorrespondant(this.state.detectedLanguage), responseJson.translations[0].translation
-                );
+                this._callback(Format.getPaysCorrespondant(language), responseJson.translations[0].translation);
             })
             .catch(error => {
                 this.setState({
@@ -69,18 +62,20 @@ export default class IBMAnswers extends Component {
     };
 
     componentDidMount = () => {
-        if (this.props.word !== "")
-            this.detecterLangue(this.props.word);
+        this.detecterLangue(this.props.word);
     };
 
     componentDidUpdate = prevProps => {
-        if (prevProps.word !== this.props.word)
+        if (prevProps.word != this.props.word)
             this.detecterLangue(this.props.word);
     }
 
     render() {
         let detectedLanguage = Format.getPaysCorrespondant(this.state.detectedLanguage);
         let translatedText = this.state.translatedText;
+
+        let count = this.props.count;
+        let IBM = this.props.gameStateIBM;
 
         return (
             <View style={styles.container}>
@@ -93,14 +88,14 @@ export default class IBMAnswers extends Component {
                     <Text>Langue : </Text>
                     {this.state.isDetectingLanguages
                         ? <ActivityIndicator />
-                        : <Text style={styles.textFound}>{detectedLanguage}</Text>}
+                        : <Text style={[styles.textFound, (IBM.languagePoints[count] == 0.5) ? { color: "green" } : (IBM.languagePoints[count] == 0) ? { color: "tomato" } : {}]}>{detectedLanguage}</Text>}
                 </View>
 
                 <View style={styles.inline}>
                     <Text>Traduction : </Text>
                     {this.state.isDetectingLanguages || this.state.isTranslating
                         ? <ActivityIndicator />
-                        : <Text style={styles.textFound}>{translatedText}</Text>}
+                        : <Text style={[styles.textFound, (IBM.languagePoints[count] == 0.5) ? { color: "green" } : (IBM.languagePoints[count] == 0) ? { color: "tomato" } : {}]}>{translatedText}</Text>}
                 </View>
             </View>
         );
