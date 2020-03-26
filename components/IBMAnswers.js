@@ -62,7 +62,7 @@ export default class IBMAnswers extends Component {
             })
             .catch(error => {
                 this.setState({
-                    translatedText: "[Pas de traduction]",
+                    translatedText: "[aucune]",
                     isTranslating: false
                 });
             });
@@ -74,9 +74,8 @@ export default class IBMAnswers extends Component {
     };
 
     componentDidUpdate = prevProps => {
-        if (prevProps.word !== this.props.word) {
+        if (prevProps.word !== this.props.word)
             this.detecterLangue(this.props.word);
-        }
     }
 
     render() {
@@ -84,30 +83,37 @@ export default class IBMAnswers extends Component {
         let translatedText = this.state.translatedText;
 
         return (
-            <View>
-                <Ionicons name="ios-git-network" color="black" size={25}></Ionicons>
+            <View style={styles.container}>
+                <View style={styles.titleView}>
+                    <Ionicons name="ios-git-network" color="black" size={25}></Ionicons>
+                    <Text style={styles.title}>Réponses d'IBM</Text>
+                </View>
 
-                <Text>Reponses d'IBM</Text>
+                <View style={styles.inline}>
+                    <Text>Langue : </Text>
+                    {this.state.isDetectingLanguages
+                        ? <ActivityIndicator />
+                        : <Text style={styles.textFound}>{detectedLanguage}</Text>}
+                </View>
 
-                <Text>Langue : </Text>
-                {this.state.isDetectingLanguages
-                    ? <ActivityIndicator style={{ width: 170, height: 50 }} />
-                    : <Text>{detectedLanguage}</Text>}
-
-                <Text>Traduction : </Text>
-                {this.state.isDetectingLanguages || this.state.isTranslating ? <ActivityIndicator style={{ width: 170, height: 50 }} /> : <Text>{translatedText}</Text>}
+                <View style={styles.inline}>
+                    <Text>Traduction : </Text>
+                    {this.state.isDetectingLanguages || this.state.isTranslating
+                        ? <ActivityIndicator />
+                        : <Text style={styles.textFound}>{translatedText}</Text>}
+                </View>
             </View>
         );
     }
 }
 
 const styles = StyleSheet.create({
-    inputContainer: {
-        width: "90%",
+    container: {
         display: "flex",
-        flexDirection: "row",
-        justifyContent: "flex-start",
-        alignItems: "center",
+        width: "65%",
+        height: 100,
+        flexDirection: "column",
+        justifyContent: "center",
         paddingVertical: 12,
         paddingHorizontal: 15,
         borderWidth: 0,
@@ -117,16 +123,27 @@ const styles = StyleSheet.create({
         elevation: 4,
         marginBottom: 20
     },
-    ioniconsMegaphone1: {
-        backgroundColor: "#fafafa",
-        paddingVertical: 18,
-        paddingHorizontal: 20,
-        borderRadius: 100
+    titleView: {
+        display: "flex",
+        width: "100%",
+        flexDirection: "row",
+        justifyContent: "space-evenly",
+        alignItems: "center",
+        marginBottom: 10
     },
-    textToTranslateInput: {
-        width: "70%",
-        backgroundColor: "white",
-        marginLeft: 25,
-        fontSize: 18
+    title: {
+        fontWeight: "bold",
+        borderBottomColor: "black",
+        borderBottomWidth: StyleSheet.hairlineWidth
+    },
+    textFound: {
+        fontStyle: "italic",
+        fontFamily: "serif"
+    },
+    inline: {
+        width: "100%",
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between"
     }
 });

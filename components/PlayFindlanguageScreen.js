@@ -158,10 +158,7 @@ export default class PlayFindlanguageScreen extends Component {
     const questions = this.props.navigation.getParam("questionsData", "Error");
 
     let word = questions[this.state.count].quest_word;
-    let language = questions[this.state.count].quest_language;
-    let translation = questions[this.state.count].quest_frenchTranslation;
-
-    let questionCount = 1;
+    let questionCount = this.state.count + 1;
 
     let questionsBtn = questions.map(question => {
       if (question.quest_id == questionCount) {
@@ -184,8 +181,6 @@ export default class PlayFindlanguageScreen extends Component {
 
         <View style={{ width: "100%", display: "flex", alignItems: "center" }}>
           <View style={styles.title}>
-            <Ionicons name="ios-help-circle-outline" size={50}></Ionicons>
-            <Text style={styles.catchphrase}>Quelle est la langue et la traduction de </Text>
             <Text style={styles.word}>{word}</Text>
           </View>
 
@@ -211,17 +206,17 @@ export default class PlayFindlanguageScreen extends Component {
             </View>
           </View>
 
-          <Text>{this.state.detectedLanguageIBM} et {this.state.translationIBM}</Text>
-          <View style={{ display: "flex", flexDirection: "row" }}>
+          <View style={{ display: "flex", flexDirection: "row", width: "90%", justifyContent: "space-between", marginTop: 10 }}>
             <IBMAnswers
               word={word}
               handleIBMAnswers={this.handleIBMAnswers} />
+
+            <View style={styles.checkAnswer}>
+              <Ionicons name="ios-checkmark-circle-outline" color="green" size={50}></Ionicons>
+              <Text>Verifier</Text>
+            </View>
           </View>
 
-          <View style={styles.checkAnswer}>
-            <Ionicons name="ios-checkmark-circle-outline" color="green" size={50}></Ionicons>
-            <Text>Verifier</Text>
-          </View>
         </View>
 
 
@@ -316,10 +311,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 20
   },
-  catchphrase: {
-    fontSize: 18,
-    textAlign: "center"
-  },
   inputContainer: {
     width: "90%",
     display: "flex",
@@ -372,7 +363,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     elevation: 4,
     backgroundColor: "#fff",
-    width: 100,
+    width: "30%",
     height: 100
   },
   questionsState: {
