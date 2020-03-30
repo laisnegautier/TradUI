@@ -1,6 +1,6 @@
-import React, { Component } from "react";
-import Routing from "./Routing/Routing";
+import React from "react";
+import Routes from "./src/config/routes";
 
 export default function App() {
-  return <Routing />;
+  return <Routes />;
 }

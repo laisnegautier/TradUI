@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Blank Template",
+    "name": "TradUI",
     "slug": "TradUI",
     "privacy": "public",
     "sdkVersion": "36.0.0",
@@ -11,9 +11,9 @@
     ],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./src/resources/images/icon.png",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./src/resources/images/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
