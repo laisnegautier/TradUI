@@ -8,6 +8,8 @@ import { createBottomTabNavigator } from "react-navigation-tabs";
 import Translation from "./../screens/Translation";
 import GameRules from "./../screens/GameRules";
 import Questions from "./../screens/Questions";
+import EndGame from "./../screens/EndGame";
+import AddQuestion from "./../screens/AddQuestion";
 
 const defaultNavigationOptions = {
     headerStyle: {
@@ -49,6 +51,12 @@ const PlayStack = createStackNavigator(
         },
         Questions: {
             screen: Questions
+        },
+        EndGame: {
+            screen: EndGame
+        },
+        AddQuestion: {
+            screen: AddQuestion
         }
     },
     {

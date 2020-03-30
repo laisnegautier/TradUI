@@ -4,13 +4,12 @@ import {
     StyleSheet,
     Text,
     View,
-    TouchableOpacity,
-    ActivityIndicator
+    TouchableOpacity
 } from "react-native";
 import { getQuestions } from "../services/api/questionGame";
 
 export default class GameRules extends Component {
-    static navigationOptions = { title: "Règles du jeu" };
+    static navigationOptions = { title: "Fin du jeu" };
 
     constructor(props) {
         super(props);
@@ -43,37 +42,7 @@ export default class GameRules extends Component {
         return (
             <View style={styles.container}>
 
-                <View style={styles.title}>
-                    <Ionicons name="ios-help-circle-outline" size={50}></Ionicons>
-                    <Text style={styles.catchphrase}>Parviendrez-vous à battre IBM Watson translator ?</Text>
-                </View>
-
-                <View style={styles.separator} />
-
-                <Text style={styles.description}>
-                    L'objectif du jeu : trouver la langue et la traduction des mots
-                    proposés !
-          </Text>
-
-                <TouchableOpacity
-                    style={styles.inputContainer}
-                    // disabledBtn to avoid multiple queries at the same time
-                    disabled={this.state.disabledBtn}
-                    onPress={() => this.questions()}>
-                    <View style={styles.ioniconsMegaphone1}>
-                        <Ionicons name="ios-play-circle" size={25}></Ionicons>
-                    </View>
-                    <Text style={styles.buttonStartGame}>{this.state.isLoading ? <ActivityIndicator style={{ width: 170, height: 50 }} /> : "Commencer le jeu !"}</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={styles.inputContainer}
-                    onPress={() => this.props.navigation.navigate("AddQuestion")}>
-                    <View style={styles.ioniconsMegaphone1}>
-                        <Ionicons name="ios-add-circle-outline" size={25}></Ionicons>
-                    </View>
-                    <Text style={styles.buttonAddTrad}>Ajouter une question</Text>
-                </TouchableOpacity>
+                <Text>Fin du jeu</Text>
 
             </View >
         );

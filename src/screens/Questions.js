@@ -44,77 +44,6 @@ export default class Questions extends Component {
         };
     }
 
-    //MOMO----------------------------
-    followingQuestion = questionCount => {
-        //tant que c'est inférieur au nb total de q°, on passe à la question suivante
-        if (this.state.count <= questionCount) {
-            this.setState({
-                count: this.state.count + 1
-            });
-        } else {
-            alert(`Terminé, vous avez ${this.state.points} points`);
-        }
-    };
-
-    createLanguage = questionId => {
-        this.setState({ isLoading: true, disabled: true });
-        fetch(
-            "http://projet-dev-mobile-laisnejouault.000webhostapp.com/createLanguage.php",
-            {
-                method: "POST",
-                headers: {
-                    Accept: "application/json",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    languageInput: this.state.languageInput,
-                    questionId: questionId
-                })
-            }
-        )
-            .then(response => response.json())
-            .then(responseJson => {
-                console.log(responseJson);
-                // Showing response message coming from server after inserting records.
-                alert(responseJson);
-                this.setState({ isLoading: false, disabled: false });
-            })
-            .catch(error => {
-                console.error(error);
-                this.setState({ isLoading: false, disabled: false });
-            });
-    };
-
-    createTranslation = questionId => {
-        this.setState({ isLoading: true, disabled: true });
-        fetch(
-            "http://projet-dev-mobile-laisnejouault.000webhostapp.com/createTranslation.php",
-            {
-                method: "POST",
-                headers: {
-                    Accept: "application/json",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    translationInput: this.state.translationInput,
-                    questionId: questionId
-                })
-            }
-        )
-            .then(response => response.json())
-            .then(responseJson => {
-                // Showing response message coming from server after inserting records.
-                alert(responseJson);
-                this.setState({ isLoading: false, disabled: false });
-            })
-            .catch(error => {
-                console.error(error);
-                this.setState({ isLoading: false, disabled: false });
-            });
-    };
-    //MOMO----------------------------
-
-
     // HANDLER CALLBACKS
     handleIBMAnswers = (language, translation) =>
         this.setState({ languageIBM: language, translationIBM: translation });
@@ -124,6 +53,8 @@ export default class Questions extends Component {
         this.setState({ translationInput: translationAnswer });
 
     // METHODS
+    // GS = GameState
+    // we update the GS arrays by adding a case at the end
     updateGS = (who, array, valueToAdd) => {
         let newArray = who[array].push(valueToAdd);
         this.setState({ ...who, array: newArray });
@@ -159,12 +90,23 @@ export default class Questions extends Component {
         this.updateGS(IBM, "translationPoints", points);
     };
 
-    nextQuestion = () => this.setState({
-        languageInput: "",
-        translationInput: "",
-        count: this.state.count + 1,
-        hasAlreadyChecked: false
-    });
+    nextQuestion = questions => {
+        if (this.state.count < questions.length - 1)
+            this.setState({
+                languageInput: "",
+                translationInput: "",
+                count: this.state.count + 1,
+                hasAlreadyChecked: false
+            });
+        else {
+            this.props.navigation.navigate("EndGame",
+                {
+                    questionsData: questions,
+                    gameStatePlayer: this.state.gameStatePlayer,
+                    gameStateIBM: this.state.gameStateIBM
+                });
+        }
+    }
 
     render() {
         const questions = this.props.navigation.getParam("questionsData", "Error");
@@ -189,14 +131,6 @@ export default class Questions extends Component {
                             <View style={styles.title}>
                                 <Text style={styles.word}>{word}</Text>
                             </View>
-
-                            {/* DEBOGUAGE
-              <Text>{this.state.languageIBM}</Text>
-              <Text>{this.state.count}</Text>
-              <Text>{this.state.languageInput}</Text>
-              <Text>{this.state.translationInput}</Text>
-              <Text>{JSON.stringify(this.state.gameStatePlayer)}</Text>
-              <Text>{JSON.stringify(this.state.gameStateIBM)}</Text> */}
 
                             <InputPlayer
                                 type="language"
@@ -228,13 +162,18 @@ export default class Questions extends Component {
                                 </TouchableOpacity>
                             </View>
 
-
-                            <TouchableOpacity
-
-                                onPress={() => this.nextQuestion()}>
-                                <Ionicons name="ios-arrow-dropright" size={50}></Ionicons>
-                                <Text>Question suivante !</Text>
-                            </TouchableOpacity>
+                            {this.state.hasAlreadyChecked
+                                ? <View>
+                                    <Text>Reponses attendues :</Text>
+                                    <Text>Langue : {questions[count].quest_language}</Text>
+                                    <Text>Traduction : {questions[count].quest_frenchTranslation}</Text><TouchableOpacity
+                                        style={styles.nextQuestion}
+                                        onPress={() => this.nextQuestion(questions)}>
+                                        <Ionicons name="ios-arrow-dropright" color="white" size={25}></Ionicons>
+                                        <Text style={styles.textQuestion}>Question suivante !</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                : null}
 
                         </View>
 
@@ -320,5 +259,19 @@ const styles = StyleSheet.create({
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between"
+    },
+    nextQuestion: {
+        padding: 10,
+        borderRadius: 5,
+        backgroundColor: "tomato",
+        width: "60%",
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-evenly",
+        alignItems: "center",
+        marginBottom: 20
+    },
+    textQuestion: {
+        color: "white"
     }
 });

@@ -24,47 +24,50 @@ export default class IBMAnswers extends Component {
         this.props.handleIBMAnswers(detectedLanguage, translation);
 
     // METHODS
-    detecterLangue = texte => {
+    searchAnswers = texte => {
         this.setState({ isDetectingLanguages: true });
 
         getDetectionLangue(texte)
             .then(jsonResponse => {
-                jsonResponse.languages;
-                this.setState({ detectedLanguages: jsonResponse.languages, detectedLanguage: jsonResponse.languages[0].language });
-                this.translate(jsonResponse.languages[0].language);
-                this.setState({ isDetectingLanguages: false });
+                this.translate(jsonResponse.languages[0].language, texte);
+                this.setState({
+                    detectedLanguages: jsonResponse.languages,
+                    detectedLanguage: jsonResponse.languages[0].language,
+                    isDetectingLanguages: false
+                });
             })
-            .catch(error => {
-                alert(error.message);
-            });
+            .catch(error => alert(error.message));
     };
 
-    translate = (language) => {
+    translate = (detectedLanguage, word) => {
         this.setState({ translatedText: "", isTranslating: true });
 
-        getTraduction(this.props.word, language, "fr")
+        getTraduction(word, detectedLanguage, "fr")
             .then(responseJson => {
                 this.setState({
                     translatedText: responseJson.translations[0].translation,
                     isTranslating: false
                 });
-                this._callback(Format.getPaysCorrespondant(language), responseJson.translations[0].translation);
             })
-            .catch(error => {
+            .catch(error =>
                 this.setState({
                     translatedText: "[aucune]",
                     isTranslating: false
-                });
-            });
+                })
+            );
     };
 
-    componentDidMount = () => {
-        this.detecterLangue(this.props.word);
-    };
+    componentDidMount = () => this.searchAnswers(this.props.word);
 
-    componentDidUpdate = prevProps => {
+    componentDidUpdate = (prevProps, prevState) => {
+        // Props changes
         if (prevProps.word != this.props.word)
-            this.detecterLangue(this.props.word);
+            this.searchAnswers(this.props.word);
+
+        // State changes
+        if (prevState.detectedLanguage != this.state.detectedLanguage
+            || prevState.translatedText != this.state.translatedText)
+            this._callback(Format.getPaysCorrespondant(this.state.detectedLanguage), this.state.translatedText);
     }
 
     render() {
@@ -92,7 +95,7 @@ export default class IBMAnswers extends Component {
                     <Text>Traduction : </Text>
                     {this.state.isDetectingLanguages || this.state.isTranslating
                         ? <ActivityIndicator />
-                        : <Text style={[styles.textFound, (IBM.languagePoints[count] == 0.5) ? { color: "green" } : (IBM.languagePoints[count] == 0) ? { color: "tomato" } : {}]}>{translatedText}</Text>}
+                        : <Text style={[styles.textFound, (IBM.translationPoints[count] == 0.5) ? { color: "green" } : (IBM.translationPoints[count] == 0) ? { color: "tomato" } : {}]}>{translatedText}</Text>}
                 </View>
             </View>
         );
