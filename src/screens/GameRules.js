@@ -7,9 +7,9 @@ import {
     TouchableOpacity,
     ActivityIndicator
 } from "react-native";
-import { getQuestions } from "./../services/api/questionGame";
+import { getQuestions } from "../services/api/questionGame";
 
-export default class PlayStart extends Component {
+export default class GameRules extends Component {
     static navigationOptions = { title: "Règles du jeu" };
 
     constructor(props) {
@@ -31,7 +31,7 @@ export default class PlayStart extends Component {
                 isLoading: false,
                 disabledBtn: false
             });
-            this.props.navigation.navigate("PlayFindLanguage", { questionsData: this.state.questionsData });
+            this.props.navigation.navigate("Questions", { questionsData: this.state.questionsData });
         })
             .catch(error => {
                 console.error(error);
@@ -72,7 +72,7 @@ export default class PlayStart extends Component {
                     disabled={this.state.disabledBtn}
                     onPress={() => {
                         this.getQuestions(),
-                            this.props.navigation.navigate("PlayFindLanguage", { questionsData: this.state.questionsData });
+                            this.props.navigation.navigate("Questions", { questionsData: this.state.questionsData });
                     }}>
                     <View style={styles.ioniconsMegaphone1}>
                         <Ionicons name="ios-add-circle-outline" size={25}></Ionicons>

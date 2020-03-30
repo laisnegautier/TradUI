@@ -6,8 +6,8 @@ import { createStackNavigator } from "react-navigation-stack";
 import { createBottomTabNavigator } from "react-navigation-tabs";
 
 import Translation from "./../screens/Translation";
-import PlayStart from "./../screens/PlayStart";
-import FindLanguage from "./../screens/FindLanguage";
+import GameRules from "./../screens/GameRules";
+import Questions from "./../screens/Questions";
 
 const defaultNavigationOptions = {
     headerStyle: {
@@ -44,11 +44,11 @@ const LearnStack = createStackNavigator(
 
 const PlayStack = createStackNavigator(
     {
-        PlayBegin: {
-            screen: PlayStart
+        GameRules: {
+            screen: GameRules
         },
-        PlayFindLanguage: {
-            screen: FindLanguage
+        Questions: {
+            screen: Questions
         }
     },
     {

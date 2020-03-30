@@ -7,14 +7,14 @@ import {
     TouchableOpacity
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import Format from "./../resources/utils/Format";
+import Format from "../resources/utils/Format";
 
-import QuestionsState from "./../components/QuestionsState/QuestionsState";
-import Score from "./../components/Score/Score";
-import IBMAnswers from "./../components/IBMAnswers/IBMAnswers";
-import InputPlayer from "./../components/InputPlayer/InputPlayer";
+import QuestionsState from "../components/QuestionsState/QuestionsState";
+import Score from "../components/Score/Score";
+import IBMAnswers from "../components/IBMAnswers/IBMAnswers";
+import InputPlayer from "../components/InputPlayer/InputPlayer";
 
-export default class FindLanguage extends Component {
+export default class Questions extends Component {
     static navigationOptions = { title: "Questions" };
 
     constructor(props) {
