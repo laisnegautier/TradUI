@@ -6,8 +6,8 @@ export default class QuestionItem extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      nom: "",
-      prenom: "",
+      name: "",
+      prename: "",
       reponse: "",
       isLoading: false,
       disabled: false,
