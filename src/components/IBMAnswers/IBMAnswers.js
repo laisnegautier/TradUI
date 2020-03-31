@@ -72,15 +72,13 @@ export default class IBMAnswers extends Component {
       prevState.translatedText != this.state.translatedText
     )
       this._callback(
-        Format.getPaysCorrespondant(this.state.detectedLanguage),
+        Format.getCountry(this.state.detectedLanguage),
         this.state.translatedText
       );
   };
 
   render() {
-    let detectedLanguage = Format.getPaysCorrespondant(
-      this.state.detectedLanguage
-    );
+    let detectedLanguage = Format.getCountry(this.state.detectedLanguage);
     let translatedText = this.state.translatedText;
 
     let count = this.props.count;
