@@ -22,11 +22,11 @@ export const getLanguageDetection = texte =>
       throw error;
     });
 
-export const getTraduction = (texte, langageDetecte, langageDeTraduction) =>
+export const getTraduction = (texte, initialLanguage, finalLanguage) =>
   fetch(rootEndpoint("translate"), {
     body: JSON.stringify({
       text: texte,
-      model_id: langageDetecte + "-" + langageDeTraduction
+      model_id: initialLanguage + "-" + finalLanguage
     }),
     headers: {
       Authorization:

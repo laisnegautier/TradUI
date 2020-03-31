@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { View, Text } from "react-native";
-import { PieChart } from "react-native-chart-kit";
+import { PieChart } from "react-native-chart-Gakit";
 
 import countries from "./../../resources/data/iso_639-2.json";
 import styles from "./styles";
