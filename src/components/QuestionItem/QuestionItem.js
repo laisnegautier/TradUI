@@ -16,7 +16,7 @@ export default class QuestionItem extends React.Component {
     };
   }
 
-  create = () => {
+  createNewPlayer = () => {
     this.setState({ isLoading: true, disabled: true });
 
     fetch(
@@ -110,7 +110,7 @@ export default class QuestionItem extends React.Component {
           />
           <TouchableOpacity
             disabled={this.state.disabled}
-            onPress={() => this.create()}
+            onPress={() => this.createNewPlayer()}
           >
             <View>
               <Text>Create</Text>
