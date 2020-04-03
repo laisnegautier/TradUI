@@ -105,40 +105,25 @@ export default class Questions extends Component {
       });
   };
 
-  addAnswer = (questionId, type) => {
+  addAnswer = (type, questionId) => {
     this.setState({ isLoading: true, disabled: true });
 
     if (type == "t") {
-      input = this.state.languageInput;
-      addTranslation(input, questionId)
-        .then(response => response.json())
-        .then(responseJson => {
-          // Showing response message coming from server after inserting records.
-          alert(responseJson);
-          this.setState({ isLoading: false, disabled: false });
-        })
-        .catch(error => {
-          console.error(error);
-          this.setState({ isLoading: false, disabled: false });
-        });
+      var input = this.state.translationInput;
+      addTranslation(input, questionId);
     } else {
-      input = this.state.languageInput;
-      addLanguage(input, questionId)
-        .then(response => response.json())
-        .then(responseJson => {
-          // Showing response message coming from server after inserting records.
-          alert(responseJson);
-          this.setState({ isLoading: false, disabled: false });
-        })
-        .catch(error => {
-          console.error(error);
-          this.setState({ isLoading: false, disabled: false });
-        });
+      var input = this.state.languageInput;
+      addLanguage(input, questionId);
     }
   };
 
   checkOtherAnswers = (answerInput, allAnswers) => {
-    return allAnswers.prototype.includes(answerInput);
+    for (const a of allAnswers) {
+      if (Format.getFormattedText(a).toLowerCase() == answerInput) {
+        return true;
+      }
+    }
+    return false;
   };
 
   checkAnswers = (expectedLanguage, expectedTranslation) => {
@@ -152,43 +137,44 @@ export default class Questions extends Component {
     let points = 0;
     let i = this.state.count;
 
-    //check for the player if answers valid or not
-    let languageIsValid;
-    let translationIsValid;
+    // add the inserted texts into the gamestate
+    this.updateGS(player, "languageAnswers", this.state.languageInput);
+    this.updateGS(player, "translationAnswers", this.state.translationInput);
+    this.updateGS(IBM, "languageAnswers", this.state.languageIBM);
+    this.updateGS(IBM, "translationAnswers", this.state.translationIBM);
 
-    languageIsValid =
+    //check for the player if answers valid or not
+    var languageIsValid =
       Format.getFormattedText(player.languageAnswers[i]).toLowerCase() ==
       expectedLanguage
         ? true
         : false;
 
     if (!languageIsValid) {
+      console.log("wtf");
       languageIsValid = this.checkOtherAnswers(
         expectedLanguage,
-        player.languageAnswers[i],
+        Format.getFormattedText(player.languageAnswers[i]).toLowerCase(),
         this.state.allLanguages
       );
     }
 
-    translationIsValid =
+    var translationIsValid =
       Format.getFormattedText(player.translationAnswers[i]).toLowerCase() ==
-      expectedLanguage
+      expectedTranslation
         ? true
         : false;
 
+    console.log(expectedTranslation);
+
     if (!translationIsValid) {
+      console.log("oups");
       translationIsValid = this.checkOtherAnswers(
         expectedTranslation,
-        player.languageAnswers[i],
-        this.state.Translations
+        Format.getFormattedText(player.translationAnswers[i]).toLowerCase(),
+        this.state.allTranslations
       );
     }
-
-    // add the inserted texts into the gamestate
-    this.updateGS(player, "languageAnswers", this.state.languageInput);
-    this.updateGS(player, "translationAnswers", this.state.translationInput);
-    this.updateGS(IBM, "languageAnswers", this.state.languageIBM);
-    this.updateGS(IBM, "translationAnswers", this.state.translationIBM);
 
     // check for the player and point distribution (0.5 per correct input)
     points = languageIsValid ? 0.5 : 0;
@@ -218,7 +204,7 @@ export default class Questions extends Component {
 
     translationIsValid =
       Format.getFormattedText(IBM.translationAnswers[i]).toLowerCase() ==
-      expectedLanguage
+      expectedTranslation
         ? true
         : false;
 

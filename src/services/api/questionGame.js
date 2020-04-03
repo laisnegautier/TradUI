@@ -56,7 +56,7 @@ export const getLanguages = (input, questionId) =>
       throw error;
     });
 
-export const getLanguages = questionId =>
+export const getTranslations = questionId =>
   fetch(rootEndpoint("queryTranslations.php"), {
     method: "POST",
     headers: {
@@ -91,7 +91,7 @@ export const addLanguage = (input, questionId) =>
     .then(response => response.json())
     .catch(function(error) {
       console.log(
-        "Un problème est survenu lors de l'ajout d'une question : " +
+        "Un problème est survenu lors de l'ajout d'une réponse : " +
           error.message
       );
       throw error;
@@ -112,7 +112,7 @@ export const addTranslation = (input, questionId) =>
     .then(response => response.json())
     .catch(function(error) {
       console.log(
-        "Un problème est survenu lors de l'ajout d'une question : " +
+        "Un problème est survenu lors de l'ajout d'une réponse : " +
           error.message
       );
       throw error;
