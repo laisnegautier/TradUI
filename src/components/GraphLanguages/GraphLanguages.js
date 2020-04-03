@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { View, Text } from "react-native";
-import { PieChart } from "react-native-chart-Gakit";
+import { PieChart } from "react-native-chart-kit";
 
 import countries from "./../../resources/data/iso_639-2.json";
 import styles from "./styles";
@@ -21,7 +21,7 @@ export default class GraphLanguages extends Component {
     // on met en majuscule la premiere lettre
     return languageFound !== undefined
       ? languageFound.French_Name.charAt(0).toUpperCase() +
-          languageFound.French_Name.slice(1)
+      languageFound.French_Name.slice(1)
       : codeIso;
   };
 

@@ -7,6 +7,7 @@ import {
     TouchableOpacity,
     ActivityIndicator
 } from "react-native";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import { addQuestion } from "../services/api/questionGame";
 
 export default class AddQuestion extends Component {
@@ -84,8 +85,12 @@ export default class AddQuestion extends Component {
                     />
                 </View>
 
-                <TouchableOpacity onPress={() => this.createQuestion()}>
-                    <Text>Ajouter</Text>
+                <TouchableOpacity
+                    disabled={this.state.disabled}
+                    onPress={() => this.createQuestion()}
+                    style={styles.createQuestion}>
+                    <Ionicons name="ios-cloud-upload" size={40}></Ionicons>
+                    <Text style={{ fontSize: 18 }}>Ajouter</Text>
                 </TouchableOpacity>
 
                 {this.state.isLoading ? <ActivityIndicator /> : null}
@@ -150,5 +155,15 @@ const styles = StyleSheet.create({
         width: "100%",
         backgroundColor: "white",
         fontSize: 18
+    },
+    createQuestion: {
+        borderRadius: 5,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        elevation: 4,
+        backgroundColor: "#fff",
+        width: "30%",
+        height: 100
     }
 });

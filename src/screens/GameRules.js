@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     },
     buttonStartGame: {
         width: "70%",
-        color: "green",
+        // color: "green",
         marginLeft: 25,
         fontSize: 18
     },
