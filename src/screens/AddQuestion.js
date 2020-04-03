@@ -90,7 +90,7 @@ export default class AddQuestion extends Component {
                     onPress={() => this.createQuestion()}
                     style={styles.createQuestion}>
                     <Ionicons name="ios-cloud-upload" size={40}></Ionicons>
-                    <Text>Ajouter</Text>
+                    <Text style={{ fontSize: 18 }}>Ajouter</Text>
                 </TouchableOpacity>
 
                 {this.state.isLoading ? <ActivityIndicator /> : null}
