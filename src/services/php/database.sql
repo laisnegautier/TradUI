@@ -22,19 +22,27 @@ create table answerLanguage (
     answerL_id integer not null primary key auto_increment,
     answerL_descr varchar
 (30) default null,
-    quest_id integer default null
+    quest_id integer not null,
+    constraint fk_answerL_quest foreign key
+(quest_id) references question
+(quest_id) 
+
 );
 
 create table answerTranslation (
     answerT_id integer not null primary key auto_increment,
     answerT_descr varchar
 (30) default null,
-    quest_id integer default null
+    quest_id integer not null,
+    constraint fk_answerT_quest foreign key
+(quest_id) references question
+(quest_id) 
+
 );
 
 insert into question
 values
-    (1, 'family', 'anglais', 'Famille', 1);
+    (1, 'eventually', 'anglais', 'finalement', 1);
 insert into question
 values
     (2, 'obrigado', 'portugais', 'merci', 2);
@@ -46,7 +54,16 @@ values
     (4, 'дом', 'russe', 'maison', 4);
 insert into question
 values
-    (5, 'coucou', 'french', 'coucou', 5);
+    (5, 'schön', 'allemand', 'beau', 5);
 insert into question
 values
-    (6, 'sympathetic', 'english', 'compatissant', 6);
+    (6, 'direttore', 'italien', 'directeur', 6);
+
+
+insert into answerTranslation
+values
+    (1, 'manager', 6);
+
+insert into answerTranslation
+values
+    (1, 'joli', 5);
