@@ -65,15 +65,7 @@ export const addLanguage = (input, questionId) =>
       input: input,
       questionId: questionId
     })
-  })
-    .then(response => response.json())
-    .catch(function (error) {
-      console.log(
-        "Un problème est survenu lors de l'ajout d'une réponse : " +
-        error.message
-      );
-      throw error;
-    });
+  });
 
 export const addTranslation = (input, questionId) =>
   fetch(rootEndpoint("createTranslation.php"), {
@@ -86,12 +78,4 @@ export const addTranslation = (input, questionId) =>
       input: input,
       questionId: questionId
     })
-  })
-    .then(response => response.json())
-    .catch(function (error) {
-      console.log(
-        "Un problème est survenu lors de l'ajout d'une réponse : " +
-        error.message
-      );
-      throw error;
-    });
+  });

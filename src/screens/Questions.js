@@ -50,6 +50,13 @@ export default class Questions extends Component {
         translationPoints: []
       },
 
+      isLoadingCheck: false,
+      isLoadingAddAnswer: false,
+      isLoadingAddLanguage: false,
+      isLoadingAddTranslation: false,
+      disabledAddLanguage: false,
+      disabledAddTranslation: false,
+
       hasAlreadyChecked: false
     };
   }
@@ -62,16 +69,10 @@ export default class Questions extends Component {
   handleTranslationAnswer = translationAnswer =>
     this.setState({ translationInput: translationAnswer });
 
-  // METHODS
-  // GS = GameState
-  // we update the GS arrays by adding a case at the end
-  updateGS = (who, array, valueToAdd) => {
-    let newArray = who[array].push(valueToAdd);
-    this.setState({ ...who, array: newArray });
-  };
 
+  // API CALLS
   languages = async questionId => {
-    this.setState({ isLoading: true });
+    this.setState({ isLoadingCheck: true });
 
     try {
       const response = await getLanguages(questionId);
@@ -83,7 +84,7 @@ export default class Questions extends Component {
   };
 
   translations = async questionId => {
-    this.setState({ isLoading: true });
+    this.setState({ isLoadingCheck: true });
 
     try {
       const response = await getTranslations(questionId);
@@ -94,18 +95,33 @@ export default class Questions extends Component {
     }
   };
 
-  addAnswer = (type, questionId) => {
-    this.setState({ isLoading: true, disabled: true });
-
+  addAnswer = async (type, questionId) => {
     if (type == "t") {
-      var input = this.state.translationInput;
-      addTranslation(input, questionId);
-    } else {
-      var input = this.state.languageInput;
-      addLanguage(input, questionId);
+      this.setState({ isLoadingAddTranslation: true, disabledAddTranslation: true });
+
+      try {
+        const response = await addTranslation(this.state.translationInput, questionId);
+        this.setState({ isLoadingAddTranslation: false });
+      } catch (e) {
+        this.setState({ isLoadingAddTranslation: false, disabledAddTranslation: false });
+        console.log(e.message)
+      }
+    }
+    else {
+      this.setState({ isLoadingAddLanguage: false, disabledAddLanguage: true });
+
+      try {
+        const response = await addLanguage(this.state.languageInput, questionId);
+        this.setState({ isLoadingAddLanguage: false });
+      } catch (e) {
+        this.setState({ isLoadingAddLanguage: false, disabledAddLanguage: false });
+        console.log(e.message)
+      }
     }
   };
 
+
+  // METHODS
   checkEveryAnswer = (expectedAnswer, answerInput, allAnswers) => {
     // the player has already the good answer (the one expected)
     if (expectedAnswer == answerInput) return true;
@@ -116,6 +132,38 @@ export default class Questions extends Component {
 
     // the player has nothing good
     return false;
+  };
+
+  // check for the player if answers valid or not
+  check = async (quest_id, expectedLanguage, expectedTranslation) => {
+
+    // forbidding to check again
+    this.setState({ hasAlreadyChecked: true });
+
+    let player = this.state.gameStatePlayer;
+    let IBM = this.state.gameStateIBM;
+
+    // formatting
+    expectedLanguage = Format.getFormattedText(expectedLanguage).toLowerCase();
+    expectedTranslation = Format.getFormattedText(expectedTranslation).toLowerCase();
+
+    // fetching all the possible answers related to the current question
+    await this.languages(quest_id);
+    await this.translations(quest_id);
+
+    await this.updateAnswers(player, IBM, this.state.languageInput, this.state.translationInput, this.state.languageIBM, this.state.translationIBM)
+
+    this.updateScore(player, player.languageAnswers, expectedLanguage, this.state.allLanguages, "languagePoints");
+    this.updateScore(player, player.translationAnswers, expectedTranslation, this.state.allTranslations, "translationPoints");
+    this.updateScore(IBM, IBM.languageAnswers, expectedLanguage, this.state.allLanguages, "languagePoints");
+    this.updateScore(IBM, IBM.translationAnswers, expectedTranslation, this.state.allTranslations, "translationPoints");
+  };
+
+  // GS = GameState
+  // we update the GS arrays by adding a case at the end
+  updateGS = (who, array, valueToAdd) => {
+    let newArray = who[array].push(valueToAdd);
+    this.setState({ ...who, array: newArray });
   };
 
   updateAnswers = (player, IBM, languageInput, translationInput, languageIBM, translationIBM) => {
@@ -134,35 +182,6 @@ export default class Questions extends Component {
     // check for the player and point distribution (0.5 per correct input)
     let points = answerIsValid ? 0.5 : 0;
     this.updateGS(who, nomTableauPoints, answerIsValid ? 0.5 : 0);
-  };
-
-  // check for the player if answers valid or not
-  check = async (quest_id, expectedLanguage, expectedTranslation) => {
-
-    // forbidding to check again
-    this.setState({ hasAlreadyChecked: true });
-
-    let player = this.state.gameStatePlayer;
-    let IBM = this.state.gameStateIBM;
-    let points = 0;
-    let i = this.state.count;
-
-    // formatting
-    expectedLanguage = Format.getFormattedText(expectedLanguage).toLowerCase();
-    expectedTranslation = Format.getFormattedText(expectedTranslation).toLowerCase();
-
-    // fetching all the possible answers related to the current question
-    await this.languages(quest_id);
-    await this.translations(quest_id);
-
-    await this.updateAnswers(player, IBM, this.state.languageInput, this.state.translationInput, this.state.languageIBM, this.state.translationIBM)
-
-    console.log(this.state.languageAnswers);
-    this.updateScore(player, player.languageAnswers, expectedLanguage, this.state.allLanguages, "languagePoints");
-    this.updateScore(player, player.translationAnswers, expectedTranslation, this.state.allTranslations, "translationPoints");
-
-    this.updateScore(IBM, IBM.languageAnswers, expectedLanguage, this.state.allLanguages, "languagePoints");
-    this.updateScore(IBM, IBM.translationAnswers, expectedTranslation, this.state.allTranslations, "translationPoints");
   };
 
   nextQuestion = questions => {
