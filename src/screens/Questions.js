@@ -31,6 +31,7 @@ export default class Questions extends Component {
       translationInput: "",
       languageIBM: "",
       translationIBM: "",
+
       allTranslations: [],
       allLanguages: [],
 
@@ -69,40 +70,28 @@ export default class Questions extends Component {
     this.setState({ ...who, array: newArray });
   };
 
-  translations = questionId => {
+  languages = async questionId => {
     this.setState({ isLoading: true });
 
-    getTranslations(questionId)
-      .then(responseJson => {
-        // Showing response message coming from server after inserting records.
-        this.setState({
-          allTranslations: responseJson,
-          isLoading: false,
-          disabledBtn: false
-        });
-      })
-      .catch(error => {
-        console.error(error);
-        this.setState({ isLoading: false });
-      });
+    try {
+      const response = await getLanguages(questionId);
+      const data = await response.json();
+      this.setState({ allLanguages: data });
+    } catch (e) {
+      console.log(e.message)
+    }
   };
 
-  languages = questionId => {
+  translations = async questionId => {
     this.setState({ isLoading: true });
 
-    getLanguages(questionId)
-      .then(responseJson => {
-        // Showing response message coming from server after inserting records.
-        this.setState({
-          allLanguages: responseJson,
-          isLoading: false,
-          disabledBtn: false
-        });
-      })
-      .catch(error => {
-        console.error(error);
-        this.setState({ isLoading: false });
-      });
+    try {
+      const response = await getTranslations(questionId);
+      const data = await response.json();
+      this.setState({ allTranslations: data });
+    } catch (e) {
+      console.log(e.message)
+    }
   };
 
   addAnswer = (type, questionId) => {
@@ -117,110 +106,63 @@ export default class Questions extends Component {
     }
   };
 
-  checkOtherAnswers = (answerInput, allAnswers) => {
-    for (const a of allAnswers) {
-      if (Format.getFormattedText(a).toLowerCase() == answerInput) {
-        return true;
-      }
-    }
+  checkEveryAnswer = (expectedAnswer, answerInput, allAnswers) => {
+    // the player has already the good answer (the one expected)
+    if (expectedAnswer == answerInput) return true;
+
+    // the player may have another answer (synonyms etc)
+    let answerIn = allAnswers.filter(obj => Format.getFormattedText(obj.answer_descr).toLowerCase() === answerInput);
+    if (answerIn.length != 0) return true;
+
+    // the player has nothing good
     return false;
   };
 
-  checkAnswers = (expectedLanguage, expectedTranslation) => {
+  updateAnswers = (player, IBM, languageInput, translationInput, languageIBM, translationIBM) => {
+    // add the inserted texts into the gamestate
+    this.updateGS(player, "languageAnswers", languageInput);
+    this.updateGS(player, "translationAnswers", translationInput);
+    this.updateGS(IBM, "languageAnswers", languageIBM);
+    this.updateGS(IBM, "translationAnswers", translationIBM);
+  };
+
+  updateScore = (who, array, expectedAnswer, allAnswers, nomTableauPoints) => {
+    let answerIsValid = Format.getFormattedText(array[this.state.count]).toLowerCase() == expectedAnswer;
+    if (!answerIsValid)
+      answerIsValid = this.checkEveryAnswer(expectedAnswer, Format.getFormattedText(array[this.state.count]).toLowerCase(), allAnswers);
+
+    // check for the player and point distribution (0.5 per correct input)
+    let points = answerIsValid ? 0.5 : 0;
+    this.updateGS(who, nomTableauPoints, answerIsValid ? 0.5 : 0);
+  };
+
+  // check for the player if answers valid or not
+  check = async (quest_id, expectedLanguage, expectedTranslation) => {
+
+    // forbidding to check again
     this.setState({ hasAlreadyChecked: true });
-    expectedLanguage = Format.getFormattedText(expectedLanguage).toLowerCase();
-    expectedTranslation = Format.getFormattedText(
-      expectedTranslation
-    ).toLowerCase();
+
     let player = this.state.gameStatePlayer;
     let IBM = this.state.gameStateIBM;
     let points = 0;
     let i = this.state.count;
 
-    // add the inserted texts into the gamestate
-    this.updateGS(player, "languageAnswers", this.state.languageInput);
-    this.updateGS(player, "translationAnswers", this.state.translationInput);
-    this.updateGS(IBM, "languageAnswers", this.state.languageIBM);
-    this.updateGS(IBM, "translationAnswers", this.state.translationIBM);
+    // formatting
+    expectedLanguage = Format.getFormattedText(expectedLanguage).toLowerCase();
+    expectedTranslation = Format.getFormattedText(expectedTranslation).toLowerCase();
 
-    //check for the player if answers valid or not
-    var languageIsValid =
-      Format.getFormattedText(player.languageAnswers[i]).toLowerCase() ==
-      expectedLanguage
-        ? true
-        : false;
+    // fetching all the possible answers related to the current question
+    await this.languages(quest_id);
+    await this.translations(quest_id);
 
-    if (!languageIsValid) {
-      console.log("wtf");
-      languageIsValid = this.checkOtherAnswers(
-        expectedLanguage,
-        Format.getFormattedText(player.languageAnswers[i]).toLowerCase(),
-        this.state.allLanguages
-      );
-    }
+    await this.updateAnswers(player, IBM, this.state.languageInput, this.state.translationInput, this.state.languageIBM, this.state.translationIBM)
 
-    var translationIsValid =
-      Format.getFormattedText(player.translationAnswers[i]).toLowerCase() ==
-      expectedTranslation
-        ? true
-        : false;
+    console.log(this.state.languageAnswers);
+    this.updateScore(player, player.languageAnswers, expectedLanguage, this.state.allLanguages, "languagePoints");
+    this.updateScore(player, player.translationAnswers, expectedTranslation, this.state.allTranslations, "translationPoints");
 
-    console.log(expectedTranslation);
-
-    if (!translationIsValid) {
-      console.log("oups");
-      translationIsValid = this.checkOtherAnswers(
-        expectedTranslation,
-        Format.getFormattedText(player.translationAnswers[i]).toLowerCase(),
-        this.state.allTranslations
-      );
-    }
-
-    // check for the player and point distribution (0.5 per correct input)
-    points = languageIsValid ? 0.5 : 0;
-    this.updateGS(player, "languagePoints", points);
-
-    points = translationIsValid ? 0.5 : 0;
-    this.updateGS(player, "translationPoints", points);
-
-    // for IBM now
-
-    languageIsValid = false;
-    translationIsValid = false;
-
-    languageIsValid =
-      Format.getFormattedText(IBM.languageAnswers[i]).toLowerCase() ==
-      expectedLanguage
-        ? true
-        : false;
-
-    if (!languageIsValid) {
-      languageIsValid = this.checkOtherAnswers(
-        expectedLanguage,
-        IBM.languageAnswers[i],
-        this.state.allLanguages
-      );
-    }
-
-    translationIsValid =
-      Format.getFormattedText(IBM.translationAnswers[i]).toLowerCase() ==
-      expectedTranslation
-        ? true
-        : false;
-
-    if (!translationIsValid) {
-      translationIsValid = this.checkOtherAnswers(
-        expectedTranslation,
-        IBM.languageAnswers[i],
-        this.state.Translations
-      );
-    }
-
-    points = languageIsValid ? 0.5 : 0;
-    this.updateGS(IBM, "languagePoints", points);
-
-    points = translationIsValid ? 0.5 : 0;
-    this.updateGS(IBM, "translationPoints", points);
+    this.updateScore(IBM, IBM.languageAnswers, expectedLanguage, this.state.allLanguages, "languagePoints");
+    this.updateScore(IBM, IBM.translationAnswers, expectedTranslation, this.state.allTranslations, "translationPoints");
   };
 
   nextQuestion = questions => {
@@ -302,10 +244,7 @@ export default class Questions extends Component {
                 <TouchableOpacity
                   disabled={this.state.hasAlreadyChecked}
                   onPress={() =>
-                    this.checkAnswers(
-                      questions[count].quest_language,
-                      questions[count].quest_frenchTranslation
-                    )
+                    this.check(questions[count].quest_id, questions[count].quest_language, questions[count].quest_frenchTranslation)
                   }
                   style={[
                     styles.checkAnswer,

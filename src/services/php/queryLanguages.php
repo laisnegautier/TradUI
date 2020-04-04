@@ -11,7 +11,9 @@ if ($connection->connect_error) {
 
 //$json = json_decode(file_get_contents('php://input'), true);
 
-$queryLanguages = "SELECT * from answerLanguage";
+// $queryLanguages = "SELECT answerL_descr FROM answerLanguage WHERE quest_id = '$json[questionId]'";
+
+$queryLanguages = "SELECT answerL_descr FROM answerLanguage WHERE quest_id = " . $_GET["id"];
 
 $query_result = $connection->query($queryLanguages);
 

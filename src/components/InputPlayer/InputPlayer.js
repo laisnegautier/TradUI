@@ -17,9 +17,6 @@ export default class InputPlayerLanguage extends Component {
         this.props.callback(answer);
     }
 
-    // METHODS
-
-
     render() {
         let count = this.props.count;
         let player = this.props.gameStatePlayer;

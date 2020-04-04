@@ -10,10 +10,10 @@ export const getQuestions = () =>
     method: "POST"
   })
     .then(response => response.json())
-    .catch(function(error) {
+    .catch(function (error) {
       console.log(
         "Un problème est survenu lors de l'accès aux questions : " +
-          error.message
+        error.message
       );
       throw error;
     });
@@ -28,53 +28,31 @@ export const addQuestion = data =>
     body: JSON.stringify(data)
   })
     .then(response => response.json())
-    .catch(function(error) {
+    .catch(function (error) {
       console.log(
         "Un problème est survenu lors de l'ajout d'une question : " +
-          error.message
+        error.message
       );
       throw error;
     });
 
-export const getLanguages = (input, questionId) =>
-  fetch(rootEndpoint("queryLanguages.php"), {
-    method: "POST",
+export const getLanguages = questionId =>
+  fetch(rootEndpoint("queryLanguages.php?id=" + questionId), {
+    method: "GET",
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      questionId: questionId
-    })
-  })
-    .then(response => response.json())
-    .catch(function(error) {
-      console.log(
-        "Un problème est survenu lors de l'accès aux questions : " +
-          error.message
-      );
-      throw error;
-    });
+    }
+  });
 
 export const getTranslations = questionId =>
-  fetch(rootEndpoint("queryTranslations.php"), {
-    method: "POST",
+  fetch(rootEndpoint("queryTranslations.php?id=" + questionId), {
+    method: "GET",
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      questionId: questionId
-    })
-  })
-    .then(response => response.json())
-    .catch(function(error) {
-      console.log(
-        "Un problème est survenu lors de l'accès aux questions : " +
-          error.message
-      );
-      throw error;
-    });
+    }
+  });
 
 export const addLanguage = (input, questionId) =>
   fetch(rootEndpoint("createLanguage.php"), {
@@ -89,10 +67,10 @@ export const addLanguage = (input, questionId) =>
     })
   })
     .then(response => response.json())
-    .catch(function(error) {
+    .catch(function (error) {
       console.log(
         "Un problème est survenu lors de l'ajout d'une réponse : " +
-          error.message
+        error.message
       );
       throw error;
     });
@@ -110,10 +88,10 @@ export const addTranslation = (input, questionId) =>
     })
   })
     .then(response => response.json())
-    .catch(function(error) {
+    .catch(function (error) {
       console.log(
         "Un problème est survenu lors de l'ajout d'une réponse : " +
-          error.message
+        error.message
       );
       throw error;
     });

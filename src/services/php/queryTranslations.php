@@ -11,7 +11,7 @@ if ($connection->connect_error) {
 
 //$json = json_decode(file_get_contents('php://input'), true);
 
-$queryTranslations = "SELECT * from answerTranslation";
+$queryTranslations = "SELECT answerT_descr FROM answerTranslation WHERE quest_id = '$json[questionId]'";
 
 $query_result = $connection->query($queryTranslations);
 
