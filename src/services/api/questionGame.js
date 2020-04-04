@@ -36,7 +36,7 @@ export const addQuestion = data =>
       throw error;
     });
 
-export const getLanguages = (input, questionId) =>
+export const getLanguages = questionId =>
   fetch(rootEndpoint("queryLanguages.php"), {
     method: "POST",
     headers: {

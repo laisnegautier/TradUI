@@ -117,21 +117,45 @@ export default class Questions extends Component {
     }
   };
 
-  checkOtherAnswers = (answerInput, allAnswers) => {
-    for (const a of allAnswers) {
-      if (Format.getFormattedText(a).toLowerCase() == answerInput) {
-        return true;
+  checkOtherAnswers = (type, answerInput, allAnswers) => {
+    if (type == "l") {
+      for (const a of allAnswers) {
+        console.log("language");
+        if (
+          Format.getFormattedText(a.answerL_descr).toLowerCase() == answerInput
+        ) {
+          console.log("c'est bon pour language!");
+          return true;
+        }
+      }
+    } else {
+      for (const a of allAnswers) {
+        console.log("translation");
+        console.log(a.answerT_descr);
+        if (
+          Format.getFormattedText(a.answerT_descr).toLowerCase() == answerInput
+        ) {
+          console.log("c'est bon pour translation!");
+          return true;
+        }
       }
     }
     return false;
   };
 
-  checkAnswers = (expectedLanguage, expectedTranslation) => {
+  checkAnswers = question => {
     this.setState({ hasAlreadyChecked: true });
-    expectedLanguage = Format.getFormattedText(expectedLanguage).toLowerCase();
-    expectedTranslation = Format.getFormattedText(
-      expectedTranslation
+    expectedLanguage = Format.getFormattedText(
+      question.quest_language
     ).toLowerCase();
+    expectedTranslation = Format.getFormattedText(
+      question.quest_frenchTranslation
+    ).toLowerCase();
+
+    let questionId = question.quest_id;
+    console.log("questionId=");
+    console.log(questionId);
+
     let player = this.state.gameStatePlayer;
     let IBM = this.state.gameStateIBM;
     let points = 0;
@@ -151,9 +175,10 @@ export default class Questions extends Component {
         : false;
 
     if (!languageIsValid) {
-      console.log("wtf");
+      console.log("languageNotValid");
+      this.languages(questionId);
       languageIsValid = this.checkOtherAnswers(
-        expectedLanguage,
+        "l",
         Format.getFormattedText(player.languageAnswers[i]).toLowerCase(),
         this.state.allLanguages
       );
@@ -165,12 +190,11 @@ export default class Questions extends Component {
         ? true
         : false;
 
-    console.log(expectedTranslation);
-
     if (!translationIsValid) {
-      console.log("oups");
+      console.log("translation Not Valid");
+      this.translations(questionId);
       translationIsValid = this.checkOtherAnswers(
-        expectedTranslation,
+        "t",
         Format.getFormattedText(player.translationAnswers[i]).toLowerCase(),
         this.state.allTranslations
       );
@@ -301,12 +325,7 @@ export default class Questions extends Component {
 
                 <TouchableOpacity
                   disabled={this.state.hasAlreadyChecked}
-                  onPress={() =>
-                    this.checkAnswers(
-                      questions[count].quest_language,
-                      questions[count].quest_frenchTranslation
-                    )
-                  }
+                  onPress={() => this.checkAnswers(questions[count])}
                   style={[
                     styles.checkAnswer,
                     this.state.hasAlreadyChecked
