@@ -97,25 +97,43 @@ export default class Questions extends Component {
 
   addAnswer = async (type, questionId) => {
     if (type == "t") {
-      this.setState({ isLoadingAddTranslation: true, disabledAddTranslation: true });
+      if (Format.getFormattedText(this.state.translationInput) == "")
+        alert("Une réponse vide n'est pas ajoutable dans la base de données.");
+      else {
+        this.setState({ isLoadingAddTranslation: true, disabledAddTranslation: true });
 
-      try {
-        const response = await addTranslation(this.state.translationInput, questionId);
-        this.setState({ isLoadingAddTranslation: false });
-      } catch (e) {
-        this.setState({ isLoadingAddTranslation: false, disabledAddTranslation: false });
-        console.log(e.message)
+        try {
+          const response = await addTranslation(this.state.translationInput, questionId);
+          this.setState({ isLoadingAddTranslation: false });
+
+          // score update
+          let newArray = this.state.gameStatePlayer.translationPoints;
+          newArray[questionId - 1] = 0.5;
+          this.setState({ ...this.state.gameStatePlayer, translationPoints: newArray });
+        } catch (e) {
+          this.setState({ isLoadingAddTranslation: false, disabledAddTranslation: false });
+          console.log(e.message)
+        }
       }
     }
     else {
-      this.setState({ isLoadingAddLanguage: false, disabledAddLanguage: true });
+      if (Format.getFormattedText(this.state.languageInput) == "")
+        alert("Une réponse vide n'est pas ajoutable dans la base de données.");
+      else {
+        this.setState({ isLoadingAddLanguage: false, disabledAddLanguage: true });
 
-      try {
-        const response = await addLanguage(this.state.languageInput, questionId);
-        this.setState({ isLoadingAddLanguage: false });
-      } catch (e) {
-        this.setState({ isLoadingAddLanguage: false, disabledAddLanguage: false });
-        console.log(e.message)
+        try {
+          const response = await addLanguage(this.state.languageInput, questionId);
+          this.setState({ isLoadingAddLanguage: false });
+
+          // score update
+          let newArray = this.state.gameStatePlayer.languagePoints;
+          newArray[questionId - 1] = 0.5;
+          this.setState({ ...this.state.gameStatePlayer, languagePoints: newArray });
+        } catch (e) {
+          this.setState({ isLoadingAddLanguage: false, disabledAddLanguage: false });
+          console.log(e.message)
+        }
       }
     }
   };
@@ -190,7 +208,9 @@ export default class Questions extends Component {
         languageInput: "",
         translationInput: "",
         count: this.state.count + 1,
-        hasAlreadyChecked: false
+        hasAlreadyChecked: false,
+        disabledAddLanguage: false,
+        disabledAddTranslation: false
       });
     else {
       this.props.navigation.navigate("EndGame", {
@@ -287,7 +307,12 @@ export default class Questions extends Component {
                   <Text>Langue : {questions[count].quest_language}</Text>
 
                   <TouchableOpacity
-                    style={styles.nextQuestion}
+                    disabled={this.state.disabledAddLanguage}
+                    style={[styles.nextQuestion,
+                    this.state.disabledAddLanguage
+                      ? { opacity: 0.3, elevation: 0 }
+                      : {}
+                    ]}
                     onPress={() =>
                       this.addAnswer("l", questions[count].quest_id)
                     }
@@ -300,7 +325,12 @@ export default class Questions extends Component {
                   </Text>
 
                   <TouchableOpacity
-                    style={styles.nextQuestion}
+                    disabled={this.state.disabledAddTranslation}
+                    style={[styles.nextQuestion,
+                    this.state.disabledAddTranslation
+                      ? { opacity: 0.3, elevation: 0 }
+                      : {}
+                    ]}
                     onPress={() =>
                       this.addAnswer("t", questions[count].quest_id)
                     }
