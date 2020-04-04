@@ -4,7 +4,8 @@ import {
   Text,
   View,
   ScrollView,
-  TouchableOpacity
+  TouchableOpacity,
+  ActivityIndicator
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Format from "../resources/utils/Format";
@@ -77,9 +78,10 @@ export default class Questions extends Component {
     try {
       const response = await getLanguages(questionId);
       const data = await response.json();
-      this.setState({ allLanguages: data });
+      this.setState({ allLanguages: data, isLoadingCheck: false });
     } catch (e) {
       console.log(e.message)
+      this.setState({ isLoadingCheck: false });
     }
   };
 
@@ -89,9 +91,10 @@ export default class Questions extends Component {
     try {
       const response = await getTranslations(questionId);
       const data = await response.json();
-      this.setState({ allTranslations: data });
+      this.setState({ allTranslations: data, isLoadingCheck: false });
     } catch (e) {
       console.log(e.message)
+      this.setState({ isLoadingCheck: false });
     }
   };
 
@@ -292,51 +295,75 @@ export default class Questions extends Component {
                       : {}
                   ]}
                 >
-                  <Ionicons
-                    name="ios-checkmark-circle-outline"
-                    color="green"
-                    size={50}
-                  ></Ionicons>
-                  <Text>Vérifier</Text>
+
+                  {this.state.isLoadingCheck ? (
+                    <ActivityIndicator size="large" />
+                  ) :
+                    <View>
+                      <Ionicons
+                        name="ios-checkmark-circle-outline"
+                        color="green"
+                        size={50}
+                      ></Ionicons>
+                      <Text>Vérifier</Text>
+                    </View>
+                  }
                 </TouchableOpacity>
               </View>
 
-              {this.state.hasAlreadyChecked ? (
-                <View>
-                  <Text>Reponses attendues :</Text>
-                  <Text>Langue : {questions[count].quest_language}</Text>
+              {this.state.hasAlreadyChecked
+                ?
+                <View style={{ display: "flex", justifyContent: "center" }}>
+                  <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+                    <View style={styles.answers}>
 
-                  <TouchableOpacity
-                    disabled={this.state.disabledAddLanguage}
-                    style={[styles.nextQuestion,
-                    this.state.disabledAddLanguage
-                      ? { opacity: 0.3, elevation: 0 }
-                      : {}
-                    ]}
-                    onPress={() =>
-                      this.addAnswer("l", questions[count].quest_id)
-                    }
-                  >
-                    <Text style={styles.textQuestion}>J'avais raison !</Text>
-                  </TouchableOpacity>
+                      <Text style={{ fontWeight: "bold" }}>
+                        Langue : {Format.getFormattedText(questions[count].quest_language).toLowerCase()}
+                      </Text>
 
-                  <Text>
-                    Traduction : {questions[count].quest_frenchTranslation}
-                  </Text>
+                      {this.state.isLoadingCheck
+                        ? <ActivityIndicator size="small" />
+                        : player.languagePoints[count] == 0
+                          ? <TouchableOpacity
+                            disabled={this.state.disabledAddLanguage}
+                            style={[styles.addAnswer,
+                            this.state.disabledAddLanguage
+                              ? { opacity: 0.3, elevation: 0 }
+                              : {}
+                            ]}
+                            onPress={() =>
+                              this.addAnswer("l", questions[count].quest_id)
+                            }
+                          >
+                            <Text>J'avais raison ?</Text>
+                          </TouchableOpacity>
+                          : <View style={{ display: "flex", flexDirection: "row", flex: 1, alignItems: "center", justifyContent: "space-between" }}><Text>Bien !</Text><Text style={{ fontWeight: "bold" }}>+{player.languagePoints[count]}</Text></View>}
+                    </View>
 
-                  <TouchableOpacity
-                    disabled={this.state.disabledAddTranslation}
-                    style={[styles.nextQuestion,
-                    this.state.disabledAddTranslation
-                      ? { opacity: 0.3, elevation: 0 }
-                      : {}
-                    ]}
-                    onPress={() =>
-                      this.addAnswer("t", questions[count].quest_id)
-                    }
-                  >
-                    <Text style={styles.textQuestion}>J'avais raison !</Text>
-                  </TouchableOpacity>
+                    <View style={styles.answers}>
+                      <Text style={{ fontWeight: "bold" }}>
+                        Traduction : {Format.getFormattedText(questions[count].quest_frenchTranslation).toLowerCase()}
+                      </Text>
+
+                      {this.state.isLoadingCheck
+                        ? <ActivityIndicator size="small" />
+                        : player.translationPoints[count] == 0
+                          ? <TouchableOpacity
+                            disabled={this.state.disabledAddTranslation}
+                            style={[styles.addAnswer,
+                            this.state.disabledAddTranslation
+                              ? { opacity: 0.3, elevation: 0 }
+                              : {}
+                            ]}
+                            onPress={() =>
+                              this.addAnswer("t", questions[count].quest_id)
+                            }
+                          >
+                            <Text>J'avais raison ?</Text>
+                          </TouchableOpacity>
+                          : <View style={{ display: "flex", flexDirection: "row", flex: 1, alignItems: "center", justifyContent: "space-between" }}><Text>Bien !</Text><Text style={{ fontWeight: "bold" }}>+{player.translationPoints[count]}</Text></View>}
+                    </View>
+                  </View>
 
                   <TouchableOpacity
                     style={styles.nextQuestion}
@@ -350,38 +377,11 @@ export default class Questions extends Component {
                     <Text style={styles.textQuestion}>Question suivante !</Text>
                   </TouchableOpacity>
                 </View>
-              ) : null}
+                : null}
             </View>
-
-            {/* <TouchableOpacity
-          disabled={this.state.disabled}
-          onPress={() => this.createLanguage(questionId)}
-        >
-          <View>
-            <Text>J'avais raison pour la langue</Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          disabled={this.state.disabled}
-          onPress={() => this.createTranslation(questionId)}
-        >
-          <View>
-            <Text>J'avais raison pour la traduction</Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.container}
-          onPress={() => {
-            this.followingQuestion(questionCount);
-          }} // passe à la question suivante
-        >
-          <Text>Passer cette question</Text>
-        </TouchableOpacity> */}
           </View>
         </ScrollView>
-      </View>
+      </View >
     );
   }
 }
@@ -444,9 +444,28 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-evenly",
     alignItems: "center",
+    alignSelf: "center",
     marginBottom: 20
   },
   textQuestion: {
     color: "white"
+  },
+  answers: {
+    backgroundColor: "white",
+    marginBottom: 20,
+    marginHorizontal: 10,
+    padding: 10,
+    borderRadius: 5,
+    elevation: 7
+  },
+  addAnswer: {
+    backgroundColor: "#f3f3f3",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    borderRadius: 5,
+    paddingVertical: 5,
+    paddingHorizontal: 7,
+    marginTop: 10
   }
 });
