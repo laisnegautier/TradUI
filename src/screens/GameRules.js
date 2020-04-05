@@ -38,13 +38,35 @@ export default class GameRules extends Component {
         }
     };
 
+    // questions = () => {
+    //     this.setState({ isLoading: true });
+
+    //     getQuestions()
+    //         .then(responseJson => {
+    //             // Showing response message coming from server after inserting records.
+    //             this.setState({
+    //                 questionsData: responseJson,
+    //                 isLoading: false,
+    //                 disabledBtn: false
+    //             });
+    //             this.props.navigation.navigate("Questions", {
+    //                 questionsData: this.state.questionsData
+    //             });
+    //         })
+    //         .catch(error => {
+    //             console.error(error);
+    //             this.setState({ isLoading: false });
+    //         });
+    // };
+
     render() {
         return (
             <View style={styles.container}>
-
                 <View style={styles.title}>
                     <Ionicons name="ios-help-circle-outline" size={50}></Ionicons>
-                    <Text style={styles.catchphrase}>Parviendrez-vous à battre IBM Watson translator ?</Text>
+                    <Text style={styles.catchphrase}>
+                        Parviendrez-vous à battre IBM Watson translator ?
+          </Text>
                 </View>
 
                 <View style={styles.separator} />
@@ -52,29 +74,36 @@ export default class GameRules extends Component {
                 <Text style={styles.description}>
                     L'objectif du jeu : trouver la langue et la traduction des mots
                     proposés !
-          </Text>
+        </Text>
 
                 <TouchableOpacity
                     style={styles.inputContainer}
                     // disabledBtn to avoid multiple queries at the same time
                     disabled={this.state.disabledBtn}
-                    onPress={() => this.questions()}>
+                    onPress={() => this.questions()}
+                >
                     <View style={styles.ioniconsMegaphone1}>
                         <Ionicons name="ios-play-circle" size={25}></Ionicons>
                     </View>
-                    <Text style={styles.buttonStartGame}>{this.state.isLoading ? <ActivityIndicator style={{ width: 170, height: 50 }} /> : "Commencer le jeu !"}</Text>
+                    <Text style={styles.buttonStartGame}>
+                        {this.state.isLoading ? (
+                            <ActivityIndicator style={{ width: 170, height: 50 }} />
+                        ) : (
+                                "Commencer le jeu !"
+                            )}
+                    </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     style={styles.inputContainer}
-                    onPress={() => this.props.navigation.navigate("AddQuestion")}>
+                    onPress={() => this.props.navigation.navigate("AddQuestion")}
+                >
                     <View style={styles.ioniconsMegaphone1}>
                         <Ionicons name="ios-add-circle-outline" size={25}></Ionicons>
                     </View>
                     <Text style={styles.buttonAddTrad}>Ajouter une question</Text>
                 </TouchableOpacity>
-
-            </View >
+            </View>
         );
     }
 }

@@ -196,7 +196,6 @@ export default class Questions extends Component {
   };
 
   updateScore = (who, array, expectedAnswer, allAnswers, nomTableauPoints) => {
-    console.log((array[this.state.count]));
     let answerIsValid = Format.getFormattedText(array[this.state.count]).toLowerCase() == expectedAnswer;
     if (!answerIsValid)
       answerIsValid = this.checkEveryAnswer(expectedAnswer, Format.getFormattedText(array[this.state.count]).toLowerCase(), allAnswers);
