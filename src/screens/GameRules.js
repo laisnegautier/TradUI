@@ -15,28 +15,27 @@ export default class GameRules extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            questionsData: [],
             isLoading: false,
             disabledBtn: false
         };
     }
 
-    questions = () => {
+    // API CALL
+    questions = async () => {
         this.setState({ isLoading: true });
 
-        getQuestions().then(responseJson => {
-            // Showing response message coming from server after inserting records.
+        try {
+            const response = await getQuestions();
+            const data = await response.json();
+            this.props.navigation.navigate("Questions", { questionsData: data });
+        } catch (e) {
+            console.log(e.message)
+        } finally {
             this.setState({
-                questionsData: responseJson,
                 isLoading: false,
                 disabledBtn: false
             });
-            this.props.navigation.navigate("Questions", { questionsData: this.state.questionsData });
-        })
-            .catch(error => {
-                console.error(error);
-                this.setState({ isLoading: false });
-            });
+        }
     };
 
     render() {

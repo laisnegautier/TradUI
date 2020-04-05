@@ -28,29 +28,25 @@ export default class AddQuestion extends Component {
         };
     }
 
-    createQuestion = () => {
+    createQuestion = async () => {
         if (this.state.quest_word != ""
             && this.state.quest_language != ""
             && this.state.quest_frenchTranslation != "") {
+
             this.setState({ isLoading: true, disabled: true });
 
-            addQuestion(
-                {
+            try {
+                const response = await addQuestion({
                     quest_word: this.state.quest_word,
                     quest_language: this.state.quest_language,
                     quest_frenchTranslation: this.state.quest_language
-                }
-            )
-                .then(responseJson => {
-                    console.log(responseJson);
-                    // Showing response message coming from server after inserting records.
-                    alert(responseJson);
-                    this.setState({ isLoading: false, disabled: false });
-                })
-                .catch(error => {
-                    console.error(error);
-                    this.setState({ isLoading: false, disabled: false });
                 });
+                alert("Votre question a bien été insérée !");
+            } catch (e) {
+                console.log(e.message)
+            } finally {
+                this.setState({ isLoading: false, disabled: false });
+            }
         }
         else {
             alert("Veuillez remplir tous les champs !");
@@ -89,11 +85,13 @@ export default class AddQuestion extends Component {
                     disabled={this.state.disabled}
                     onPress={() => this.createQuestion()}
                     style={styles.createQuestion}>
-                    <Ionicons name="ios-cloud-upload" size={40}></Ionicons>
-                    <Text style={{ fontSize: 18 }}>Ajouter</Text>
+                    {this.state.isLoading
+                        ? <ActivityIndicator size="large" />
+                        : <View style={{ display: "flex", alignItems: "center" }}>
+                            <Ionicons name="ios-cloud-upload" size={40}></Ionicons>
+                            <Text style={{ fontSize: 18 }}>Ajouter</Text>
+                        </View>}
                 </TouchableOpacity>
-
-                {this.state.isLoading ? <ActivityIndicator /> : null}
 
             </View>
         );

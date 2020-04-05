@@ -2,10 +2,7 @@ import React, { Component } from "react";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { Text, View, ActivityIndicator } from "react-native";
 
-import {
-  getLanguageDetection,
-  getTraduction
-} from "./../../services/api/langageTranslator";
+import { getLanguageDetection, getTraduction } from "./../../services/api/langageTranslator";
 import Format from "./../../resources/utils/Format";
 import styles from "./styles";
 
@@ -27,54 +24,53 @@ export default class IBMAnswers extends Component {
     this.props.handleIBMAnswers(detectedLanguage, translation);
 
   // METHODS
-  searchAnswers = texte => {
+  // we detect language first then we translate
+  searchAnswers = async word => {
     this.setState({ isDetectingLanguages: true });
 
-    getLanguageDetection(texte)
-      .then(jsonResponse => {
-        this.translate(jsonResponse.languages[0].language, texte);
-        this.setState({
-          detectedLanguages: jsonResponse.languages,
-          detectedLanguage: jsonResponse.languages[0].language,
-          isDetectingLanguages: false
-        });
-      })
-      .catch(error => alert(error.message));
+    try {
+      const response = await getLanguageDetection(word);
+      const data = (await response.json()).languages;
+      this.setState(
+        {
+          detectedLanguages: data,
+          detectedLanguage: data[0].language
+        },
+        () => this.translate(data[0].language, word)
+      );
+    } catch (e) {
+      console.log(e.message);
+      this.setState({ detectedLanguage: "[aucune]" });
+    } finally {
+      this.setState({ isDetectingLanguages: false });
+    }
   };
 
-  translate = (detectedLanguage, word) => {
+  translate = async (detectedLanguage, word) => {
     this.setState({ translatedText: "", isTranslating: true });
 
-    getTraduction(word, detectedLanguage, "fr")
-      .then(responseJson => {
-        this.setState({
-          translatedText: responseJson.translations[0].translation,
-          isTranslating: false
-        });
-      })
-      .catch(error =>
-        this.setState({
-          translatedText: "[aucune]",
-          isTranslating: false
-        })
+    try {
+      const response = await getTraduction(word, detectedLanguage, "fr");
+      const data = (await response.json()).translations[0].translation;
+      this.setState({ translatedText: data });
+    } catch (e) {
+      console.log(e.message);
+      this.setState({ translatedText: "[aucune]" });
+    } finally {
+      this.setState(
+        { isTranslating: false },
+        () => this._callback(
+          Format.getCountry(detectedLanguage),
+          this.state.translatedText
+        )
       );
+    }
   };
 
   componentDidMount = () => this.searchAnswers(this.props.word);
 
-  componentDidUpdate = (prevProps, prevState) => {
-    // Props changes
+  componentDidUpdate = (prevProps) => {
     if (prevProps.word != this.props.word) this.searchAnswers(this.props.word);
-
-    // State changes
-    if (
-      prevState.detectedLanguage != this.state.detectedLanguage ||
-      prevState.translatedText != this.state.translatedText
-    )
-      this._callback(
-        Format.getCountry(this.state.detectedLanguage),
-        this.state.translatedText
-      );
   };
 
   render() {
@@ -96,19 +92,19 @@ export default class IBMAnswers extends Component {
           {this.state.isDetectingLanguages ? (
             <ActivityIndicator />
           ) : (
-            <Text
-              style={[
-                styles.textFound,
-                IBM.languagePoints[count] == 0.5
-                  ? { color: "green" }
-                  : IBM.languagePoints[count] == 0
-                  ? { color: "tomato" }
-                  : {}
-              ]}
-            >
-              {detectedLanguage}
-            </Text>
-          )}
+              <Text
+                style={[
+                  styles.textFound,
+                  IBM.languagePoints[count] == 0.5
+                    ? { color: "green" }
+                    : IBM.languagePoints[count] == 0
+                      ? { color: "tomato" }
+                      : {}
+                ]}
+              >
+                {detectedLanguage}
+              </Text>
+            )}
         </View>
 
         <View style={styles.inline}>
@@ -116,19 +112,19 @@ export default class IBMAnswers extends Component {
           {this.state.isDetectingLanguages || this.state.isTranslating ? (
             <ActivityIndicator />
           ) : (
-            <Text
-              style={[
-                styles.textFound,
-                IBM.translationPoints[count] == 0.5
-                  ? { color: "green" }
-                  : IBM.translationPoints[count] == 0
-                  ? { color: "tomato" }
-                  : {}
-              ]}
-            >
-              {translatedText}
-            </Text>
-          )}
+              <Text
+                style={[
+                  styles.textFound,
+                  IBM.translationPoints[count] == 0.5
+                    ? { color: "green" }
+                    : IBM.translationPoints[count] == 0
+                      ? { color: "tomato" }
+                      : {}
+                ]}
+              >
+                {translatedText}
+              </Text>
+            )}
         </View>
       </View>
     );

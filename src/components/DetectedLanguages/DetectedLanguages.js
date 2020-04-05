@@ -21,20 +21,20 @@ export default class DetectedLanguages extends Component {
     this.props.handleChosenInitialLanguageChange(newChosenInitialLanguage);
 
   // METHODS
-  detectLanguage = texte => {
+  detectLanguage = async text => {
     this.setState({ isDetectingLanguages: true });
 
-    getLanguageDetection(texte)
-      .then(jsonResponse => {
-        jsonResponse.languages;
-        this.setState({ detectedLanguages: jsonResponse.languages });
-        this._onDetectedLanguagesChange(jsonResponse.languages);
-        this._onChosenInitialLanguageChange(jsonResponse.languages[0].language);
-        this.setState({ isDetectingLanguages: false });
-      })
-      .catch(error => {
-        alert(error.message);
-      });
+    try {
+      const response = await getLanguageDetection(text);
+      const data = (await response.json()).languages;
+      this.setState({ detectedLanguages: data });
+      this._onDetectedLanguagesChange(data);
+      this._onChosenInitialLanguageChange(data[0].language);
+    } catch (e) {
+      console.log(e.message);
+    } finally {
+      this.setState({ isDetectingLanguages: false });
+    }
   };
 
   pickerChange(value, index) {

@@ -16,8 +16,8 @@ const Format = {
 
     // on met en majuscule la premiere lettre
     return langueTrouvee !== undefined
-      ? langueTrouvee.French_Name.charAt(0).toUpperCase() +
-          langueTrouvee.French_Name.slice(1)
+      ? ((langueTrouvee.French_Name.charAt(0).toUpperCase() +
+        langueTrouvee.French_Name.slice(1)).split(";", 1))[0]
       : codeIso;
   }
 };
