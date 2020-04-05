@@ -27,31 +27,26 @@ export default class TranslatedText extends Component {
             })
             : this.state.isTranslating
                 ? alert("Veuillez patienter, le texte a besoin d'être traduit.")
-                : alert(
-                    "Veuillez insérer du texte avant d'utiliser cette fonctionnalité."
-                );
+                : alert("Veuillez insérer du texte avant d'utiliser cette fonctionnalité.");
     };
 
-    translate = () => {
+    translate = async () => {
         this.setState({ translatedText: "", isTranslating: true });
 
-        getTraduction(
-            this.props.insertedText,
-            this.props.chosenInitialLanguage,
-            this.props.chosenTranslationLanguage
-        )
-            .then(responseJson => {
-                this.setState({
-                    translatedText: responseJson.translations[0].translation,
-                    isTranslating: false
-                });
-            })
-            .catch(error => {
-                this.setState({
-                    translatedText: "[Pas de traduction]",
-                    isTranslating: false
-                });
-            });
+        try {
+            const response = await getTraduction(
+                this.props.insertedText,
+                this.props.chosenInitialLanguage,
+                this.props.chosenTranslationLanguage
+            );
+            const data = (await response.json()).translations[0].translation;
+            this.setState({ translatedText: data });
+        } catch (e) {
+            console.log(e.message);
+            this.setState({ translatedText: "[Pas de traduction]" });
+        } finally {
+            this.setState({ isTranslating: false });
+        }
     };
 
     // ERRORS
