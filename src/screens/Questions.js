@@ -5,7 +5,7 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
-  ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Format from "../resources/utils/Format";
@@ -19,7 +19,7 @@ import {
   getLanguages,
   getTranslations,
   addLanguage,
-  addTranslation
+  addTranslation,
 } from "../services/api/questionGame";
 
 export default class Questions extends Component {
@@ -42,13 +42,13 @@ export default class Questions extends Component {
         languageAnswers: [],
         languagePoints: [],
         translationAnswers: [],
-        translationPoints: []
+        translationPoints: [],
       },
       gameStateIBM: {
         languageAnswers: [],
         languagePoints: [],
         translationAnswers: [],
-        translationPoints: []
+        translationPoints: [],
       },
 
       isLoadingCheck: false,
@@ -58,21 +58,20 @@ export default class Questions extends Component {
       disabledAddLanguage: false,
       disabledAddTranslation: false,
 
-      hasAlreadyChecked: false
+      hasAlreadyChecked: false,
     };
   }
 
   // HANDLER CALLBACKS
   handleIBMAnswers = (language, translation) =>
     this.setState({ languageIBM: language, translationIBM: translation });
-  handleLanguageAnswer = languageAnswer =>
+  handleLanguageAnswer = (languageAnswer) =>
     this.setState({ languageInput: languageAnswer });
-  handleTranslationAnswer = translationAnswer =>
+  handleTranslationAnswer = (translationAnswer) =>
     this.setState({ translationInput: translationAnswer });
 
-
   // API CALLS
-  languages = async questionId => {
+  languages = async (questionId) => {
     this.setState({ isLoadingCheck: true });
 
     try {
@@ -80,12 +79,12 @@ export default class Questions extends Component {
       const data = await response.json();
       this.setState({ allLanguages: data, isLoadingCheck: false });
     } catch (e) {
-      console.log(e.message)
+      console.log(e.message);
       this.setState({ isLoadingCheck: false });
     }
   };
 
-  translations = async questionId => {
+  translations = async (questionId) => {
     this.setState({ isLoadingCheck: true });
 
     try {
@@ -93,7 +92,7 @@ export default class Questions extends Component {
       const data = await response.json();
       this.setState({ allTranslations: data, isLoadingCheck: false });
     } catch (e) {
-      console.log(e.message)
+      console.log(e.message);
       this.setState({ isLoadingCheck: false });
     }
   };
@@ -101,46 +100,68 @@ export default class Questions extends Component {
   addAnswer = async (type, questionId) => {
     if (type == "t") {
       if (Format.getFormattedText(this.state.translationInput) == "")
-        alert("Une réponse vide n'est pas ajoutable dans la base de données.");
+        alert("Une réponse vide ne peut être ajoutée dans la base de données.");
       else {
-        this.setState({ isLoadingAddTranslation: true, disabledAddTranslation: true });
+        this.setState({
+          isLoadingAddTranslation: true,
+          disabledAddTranslation: true,
+        });
 
         try {
-          const response = await addTranslation(this.state.translationInput, questionId);
+          const response = await addTranslation(
+            this.state.translationInput,
+            questionId
+          );
           this.setState({ isLoadingAddTranslation: false });
 
           // score update
           let newArray = this.state.gameStatePlayer.translationPoints;
           newArray[questionId - 1] = 0.5;
-          this.setState({ ...this.state.gameStatePlayer, translationPoints: newArray });
+          this.setState({
+            ...this.state.gameStatePlayer,
+            translationPoints: newArray,
+          });
         } catch (e) {
-          this.setState({ isLoadingAddTranslation: false, disabledAddTranslation: false });
-          console.log(e.message)
+          this.setState({
+            isLoadingAddTranslation: false,
+            disabledAddTranslation: false,
+          });
+          console.log(e.message);
         }
       }
-    }
-    else {
+    } else {
       if (Format.getFormattedText(this.state.languageInput) == "")
         alert("Une réponse vide n'est pas ajoutable dans la base de données.");
       else {
-        this.setState({ isLoadingAddLanguage: false, disabledAddLanguage: true });
+        this.setState({
+          isLoadingAddLanguage: false,
+          disabledAddLanguage: true,
+        });
 
         try {
-          const response = await addLanguage(this.state.languageInput, questionId);
+          const response = await addLanguage(
+            this.state.languageInput,
+            questionId
+          );
           this.setState({ isLoadingAddLanguage: false });
 
           // score update
           let newArray = this.state.gameStatePlayer.languagePoints;
           newArray[questionId - 1] = 0.5;
-          this.setState({ ...this.state.gameStatePlayer, languagePoints: newArray });
+          this.setState({
+            ...this.state.gameStatePlayer,
+            languagePoints: newArray,
+          });
         } catch (e) {
-          this.setState({ isLoadingAddLanguage: false, disabledAddLanguage: false });
-          console.log(e.message)
+          this.setState({
+            isLoadingAddLanguage: false,
+            disabledAddLanguage: false,
+          });
+          console.log(e.message);
         }
       }
     }
   };
-
 
   // METHODS
   checkEveryAnswer = (expectedAnswer, answerInput, allAnswers) => {
@@ -148,7 +169,10 @@ export default class Questions extends Component {
     if (expectedAnswer == answerInput) return true;
 
     // the player may have another answer (synonyms etc)
-    let answerIn = allAnswers.filter(obj => Format.getFormattedText(obj.answer_descr).toLowerCase() === answerInput);
+    let answerIn = allAnswers.filter(
+      (obj) =>
+        Format.getFormattedText(obj.answer_descr).toLowerCase() === answerInput
+    );
     if (answerIn.length != 0) return true;
 
     // the player has nothing good
@@ -157,7 +181,6 @@ export default class Questions extends Component {
 
   // check for the player if answers valid or not
   check = async (quest_id, expectedLanguage, expectedTranslation) => {
-
     // forbidding to check again
     this.setState({ hasAlreadyChecked: true });
 
@@ -166,18 +189,51 @@ export default class Questions extends Component {
 
     // formatting
     expectedLanguage = Format.getFormattedText(expectedLanguage).toLowerCase();
-    expectedTranslation = Format.getFormattedText(expectedTranslation).toLowerCase();
+    expectedTranslation = Format.getFormattedText(
+      expectedTranslation
+    ).toLowerCase();
 
     // fetching all the possible answers related to the current question
     await this.languages(quest_id);
     await this.translations(quest_id);
 
-    await this.updateAnswers(player, IBM, this.state.languageInput, this.state.translationInput, this.state.languageIBM, this.state.translationIBM)
+    await this.updateAnswers(
+      player,
+      IBM,
+      this.state.languageInput,
+      this.state.translationInput,
+      this.state.languageIBM,
+      this.state.translationIBM
+    );
 
-    this.updateScore(player, player.languageAnswers, expectedLanguage, this.state.allLanguages, "languagePoints");
-    this.updateScore(player, player.translationAnswers, expectedTranslation, this.state.allTranslations, "translationPoints");
-    this.updateScore(IBM, IBM.languageAnswers, expectedLanguage, this.state.allLanguages, "languagePoints");
-    this.updateScore(IBM, IBM.translationAnswers, expectedTranslation, this.state.allTranslations, "translationPoints");
+    this.updateScore(
+      player,
+      player.languageAnswers,
+      expectedLanguage,
+      this.state.allLanguages,
+      "languagePoints"
+    );
+    this.updateScore(
+      player,
+      player.translationAnswers,
+      expectedTranslation,
+      this.state.allTranslations,
+      "translationPoints"
+    );
+    this.updateScore(
+      IBM,
+      IBM.languageAnswers,
+      expectedLanguage,
+      this.state.allLanguages,
+      "languagePoints"
+    );
+    this.updateScore(
+      IBM,
+      IBM.translationAnswers,
+      expectedTranslation,
+      this.state.allTranslations,
+      "translationPoints"
+    );
   };
 
   // GS = GameState
@@ -187,7 +243,14 @@ export default class Questions extends Component {
     this.setState({ ...who, array: newArray });
   };
 
-  updateAnswers = (player, IBM, languageInput, translationInput, languageIBM, translationIBM) => {
+  updateAnswers = (
+    player,
+    IBM,
+    languageInput,
+    translationInput,
+    languageIBM,
+    translationIBM
+  ) => {
     // add the inserted texts into the gamestate
     this.updateGS(player, "languageAnswers", languageInput);
     this.updateGS(player, "translationAnswers", translationInput);
@@ -196,16 +259,22 @@ export default class Questions extends Component {
   };
 
   updateScore = (who, array, expectedAnswer, allAnswers, nomTableauPoints) => {
-    let answerIsValid = Format.getFormattedText(array[this.state.count]).toLowerCase() == expectedAnswer;
+    let answerIsValid =
+      Format.getFormattedText(array[this.state.count]).toLowerCase() ==
+      expectedAnswer;
     if (!answerIsValid)
-      answerIsValid = this.checkEveryAnswer(expectedAnswer, Format.getFormattedText(array[this.state.count]).toLowerCase(), allAnswers);
+      answerIsValid = this.checkEveryAnswer(
+        expectedAnswer,
+        Format.getFormattedText(array[this.state.count]).toLowerCase(),
+        allAnswers
+      );
 
     // check for the player and point distribution (0.5 per correct input)
     let points = answerIsValid ? 0.5 : 0;
     this.updateGS(who, nomTableauPoints, answerIsValid ? 0.5 : 0);
   };
 
-  nextQuestion = questions => {
+  nextQuestion = (questions) => {
     if (this.state.count < questions.length - 1)
       this.setState({
         languageInput: "",
@@ -213,13 +282,13 @@ export default class Questions extends Component {
         count: this.state.count + 1,
         hasAlreadyChecked: false,
         disabledAddLanguage: false,
-        disabledAddTranslation: false
+        disabledAddTranslation: false,
       });
     else {
       this.props.navigation.navigate("EndGame", {
         questionsData: questions,
         gameStatePlayer: this.state.gameStatePlayer,
-        gameStateIBM: this.state.gameStateIBM
+        gameStateIBM: this.state.gameStateIBM,
       });
     }
   };
@@ -273,7 +342,7 @@ export default class Questions extends Component {
                   flexDirection: "row",
                   width: "90%",
                   justifyContent: "space-between",
-                  marginTop: 0
+                  marginTop: 0,
                 }}
               >
                 <IBMAnswers
@@ -286,19 +355,22 @@ export default class Questions extends Component {
                 <TouchableOpacity
                   disabled={this.state.hasAlreadyChecked}
                   onPress={() =>
-                    this.check(questions[count].quest_id, questions[count].quest_language, questions[count].quest_frenchTranslation)
+                    this.check(
+                      questions[count].quest_id,
+                      questions[count].quest_language,
+                      questions[count].quest_frenchTranslation
+                    )
                   }
                   style={[
                     styles.checkAnswer,
                     this.state.hasAlreadyChecked
                       ? { opacity: 0.3, elevation: 0 }
-                      : {}
+                      : {},
                   ]}
                 >
-
                   {this.state.isLoadingCheck ? (
                     <ActivityIndicator size="large" />
-                  ) :
+                  ) : (
                     <View>
                       <Ionicons
                         name="ios-checkmark-circle-outline"
@@ -307,61 +379,103 @@ export default class Questions extends Component {
                       ></Ionicons>
                       <Text>Vérifier</Text>
                     </View>
-                  }
+                  )}
                 </TouchableOpacity>
               </View>
 
-              {this.state.hasAlreadyChecked
-                ?
+              {this.state.hasAlreadyChecked ? (
                 <View style={{ display: "flex", justifyContent: "center" }}>
-                  <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+                  <View
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
                     <View style={styles.answers}>
-
                       <Text style={{ fontWeight: "bold" }}>
-                        Langue : {Format.getFormattedText(questions[count].quest_language).toLowerCase()}
+                        Langue :{" "}
+                        {Format.getFormattedText(
+                          questions[count].quest_language
+                        ).toLowerCase()}
                       </Text>
 
-                      {this.state.isLoadingCheck
-                        ? <ActivityIndicator size="small" />
-                        : player.languagePoints[count] == 0
-                          ? <TouchableOpacity
-                            disabled={this.state.disabledAddLanguage}
-                            style={[styles.addAnswer,
+                      {this.state.isLoadingCheck ? (
+                        <ActivityIndicator size="small" />
+                      ) : player.languagePoints[count] == 0 ? (
+                        <TouchableOpacity
+                          disabled={this.state.disabledAddLanguage}
+                          style={[
+                            styles.addAnswer,
                             this.state.disabledAddLanguage
                               ? { opacity: 0.3, elevation: 0 }
-                              : {}
-                            ]}
-                            onPress={() =>
-                              this.addAnswer("l", questions[count].quest_id)
-                            }
-                          >
-                            <Text>J'avais raison ?</Text>
-                          </TouchableOpacity>
-                          : <View style={{ display: "flex", flexDirection: "row", flex: 1, alignItems: "center", justifyContent: "space-between" }}><Text>Bien !</Text><Text style={{ fontWeight: "bold" }}>+{player.languagePoints[count]}</Text></View>}
+                              : {},
+                          ]}
+                          onPress={() =>
+                            this.addAnswer("l", questions[count].quest_id)
+                          }
+                        >
+                          <Text>J'avais raison ?</Text>
+                        </TouchableOpacity>
+                      ) : (
+                        <View
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            flex: 1,
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <Text>Bien !</Text>
+                          <Text style={{ fontWeight: "bold" }}>
+                            +{player.languagePoints[count]}
+                          </Text>
+                        </View>
+                      )}
                     </View>
 
                     <View style={styles.answers}>
                       <Text style={{ fontWeight: "bold" }}>
-                        Traduction : {Format.getFormattedText(questions[count].quest_frenchTranslation).toLowerCase()}
+                        Traduction :{" "}
+                        {Format.getFormattedText(
+                          questions[count].quest_frenchTranslation
+                        ).toLowerCase()}
                       </Text>
 
-                      {this.state.isLoadingCheck
-                        ? <ActivityIndicator size="small" />
-                        : player.translationPoints[count] == 0
-                          ? <TouchableOpacity
-                            disabled={this.state.disabledAddTranslation}
-                            style={[styles.addAnswer,
+                      {this.state.isLoadingCheck ? (
+                        <ActivityIndicator size="small" />
+                      ) : player.translationPoints[count] == 0 ? (
+                        <TouchableOpacity
+                          disabled={this.state.disabledAddTranslation}
+                          style={[
+                            styles.addAnswer,
                             this.state.disabledAddTranslation
                               ? { opacity: 0.3, elevation: 0 }
-                              : {}
-                            ]}
-                            onPress={() =>
-                              this.addAnswer("t", questions[count].quest_id)
-                            }
-                          >
-                            <Text>J'avais raison ?</Text>
-                          </TouchableOpacity>
-                          : <View style={{ display: "flex", flexDirection: "row", flex: 1, alignItems: "center", justifyContent: "space-between" }}><Text>Bien !</Text><Text style={{ fontWeight: "bold" }}>+{player.translationPoints[count]}</Text></View>}
+                              : {},
+                          ]}
+                          onPress={() =>
+                            this.addAnswer("t", questions[count].quest_id)
+                          }
+                        >
+                          <Text>J'avais raison ?</Text>
+                        </TouchableOpacity>
+                      ) : (
+                        <View
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            flex: 1,
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <Text>Bien !</Text>
+                          <Text style={{ fontWeight: "bold" }}>
+                            +{player.translationPoints[count]}
+                          </Text>
+                        </View>
+                      )}
                     </View>
                   </View>
 
@@ -377,11 +491,11 @@ export default class Questions extends Component {
                     <Text style={styles.textQuestion}>Question suivante !</Text>
                   </TouchableOpacity>
                 </View>
-                : null}
+              ) : null}
             </View>
           </View>
         </ScrollView>
-      </View >
+      </View>
     );
   }
 }
@@ -389,13 +503,13 @@ export default class Questions extends Component {
 const styles = StyleSheet.create({
   bigContainer: {
     height: "100%",
-    backgroundColor: "#fff"
+    backgroundColor: "#fff",
   },
   container: {
     height: "100%",
     display: "flex",
     backgroundColor: "#fff",
-    alignItems: "center"
+    alignItems: "center",
   },
   questionDetails: {
     backgroundColor: "tomato",
@@ -405,19 +519,19 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
     paddingHorizontal: 15,
     borderBottomLeftRadius: 5,
-    borderBottomRightRadius: 5
+    borderBottomRightRadius: 5,
   },
   title: {
     display: "flex",
     alignItems: "center",
     marginTop: 20,
-    marginBottom: 20
+    marginBottom: 20,
   },
   word: {
     fontSize: 30,
     marginTop: 10,
     fontStyle: "italic",
-    fontFamily: "serif"
+    fontFamily: "serif",
   },
   checkAnswer: {
     borderRadius: 5,
@@ -427,13 +541,13 @@ const styles = StyleSheet.create({
     elevation: 4,
     backgroundColor: "#fff",
     width: "30%",
-    height: 100
+    height: 100,
   },
   header: {
     width: "100%",
     display: "flex",
     flexDirection: "row",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   nextQuestion: {
     padding: 10,
@@ -445,10 +559,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     alignItems: "center",
     alignSelf: "center",
-    marginBottom: 20
+    marginBottom: 20,
   },
   textQuestion: {
-    color: "white"
+    color: "white",
   },
   answers: {
     backgroundColor: "white",
@@ -456,7 +570,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     padding: 10,
     borderRadius: 5,
-    elevation: 7
+    elevation: 7,
   },
   addAnswer: {
     backgroundColor: "#f3f3f3",
@@ -466,6 +580,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingVertical: 5,
     paddingHorizontal: 7,
-    marginTop: 10
-  }
+    marginTop: 10,
+  },
 });
