@@ -13,7 +13,7 @@ if ($connection->connect_error) {
 
 // $queryLanguages = "SELECT answerL_descr FROM answerLanguage WHERE quest_id = '$json[questionId]'";
 
-$queryLanguages = "SELECT answerL_descr FROM answerLanguage WHERE quest_id = " . $_GET["id"];
+$queryLanguages = "SELECT answer_descr FROM answerLanguage WHERE quest_id = " . $_GET["id"];
 
 $query_result = $connection->query($queryLanguages);
 

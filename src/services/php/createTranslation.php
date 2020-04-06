@@ -14,7 +14,7 @@ if ($connection->connect_error) {
 
 $json = json_decode(file_get_contents('php://input'), true);
 
-$query = "INSERT INTO answerTranslation(answer_descr, quest_id) values('$json[translationInput]', '$json[questionId]')";
+$query = "INSERT INTO answerTranslation(answer_descr, quest_id) values('$json[input]', '$json[questionId]')";
 
 $query_result = $connection->query($query);
 

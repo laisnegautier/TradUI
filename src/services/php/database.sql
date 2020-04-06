@@ -19,9 +19,8 @@ create table question (
 );
 
 create table answerLanguage (
-    answerL_id integer not null primary key auto_increment,
-    answerL_descr varchar
-(30) default null,
+    answer_id integer not null primary key auto_increment,
+    answer_descr varchar(30) default null,
     quest_id integer not null,
     constraint fk_answerL_quest foreign key
 (quest_id) references question
@@ -30,9 +29,8 @@ create table answerLanguage (
 );
 
 create table answerTranslation (
-    answerT_id integer not null primary key auto_increment,
-    answerT_descr varchar
-(30) default null,
+    answer_id integer not null primary key auto_increment,
+    answer_descr varchar(30) default null,
     quest_id integer not null,
     constraint fk_answerT_quest foreign key
 (quest_id) references question
@@ -67,3 +65,4 @@ values
 insert into answerTranslation
 values
     (1, 'joli', 5);
+    

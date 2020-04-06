@@ -9,11 +9,9 @@ if ($connection->connect_error) {
     die("Connection failed: " . $connection->connect_error);
 }
 
-//$json = json_decode(file_get_contents('php://input'), true);
+$queryLanguages = "SELECT answer_descr FROM answerTranslation WHERE quest_id = " . $_GET["id"];
 
-$queryTranslations = "SELECT answerT_descr FROM answerTranslation WHERE quest_id = '$json[questionId]'";
-
-$query_result = $connection->query($queryTranslations);
+$query_result = $connection->query($queryLanguages);
 
 // Conversion en JSON
 $dbdata = array();
